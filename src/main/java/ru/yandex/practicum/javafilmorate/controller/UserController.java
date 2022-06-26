@@ -1,5 +1,6 @@
 package ru.yandex.practicum.javafilmorate.controller;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,9 @@ import java.util.Map;
 @Slf4j
 @RequestMapping
 public class UserController {
+    @Getter
     private final Map<Integer, User> users = new HashMap<>();
+
     private static int setId = 1;
 
     public static int getSetId() {
@@ -31,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/users")
-    public User create(@RequestBody User user) {
+    public User createUser(@RequestBody User user) {
         if (user.getEmail() == null || user.getEmail().isEmpty() || user.getEmail().isBlank() ||
                 !user.getEmail().contains("@")) {
             log.debug("Адрес электронной почты пустой {}", user.getEmail());
@@ -56,7 +59,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/users")
-    public User update(@RequestBody User user) {
+    public User updateUser(@RequestBody User user) {
         if (user.getEmail() == null || user.getEmail().isEmpty() || user.getEmail().isBlank() ||
                 !user.getEmail().contains("@")) {
             log.debug("Адрес электронной почты пустой {}", user.getEmail());
