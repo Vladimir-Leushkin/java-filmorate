@@ -98,6 +98,7 @@ public class FilmControllerTest extends FilmController {
 
         assertEquals("Продолжительность фильма не может быть нулевой", ex.getMessage());
     }
+
     @Test
     void expectExceptionEmptyNameByUpdateFilm() {
         //Подготовка
@@ -169,8 +170,9 @@ public class FilmControllerTest extends FilmController {
 
         assertEquals("Продолжительность фильма не может быть нулевой", ex.getMessage());
     }
+
     @Test
-    void expectCreateFilmByUpdateFilm(){
+    void expectCreateFilmByUpdateFilm() {
         //Подготовка
         //Исполнение
         //Проверка
@@ -179,7 +181,7 @@ public class FilmControllerTest extends FilmController {
     }
 
     @Test
-    void expectCreateFilmByGetFilm(){
+    void expectCreateFilmByGetFilm() {
         //Подготовка
         //Исполнение
         createFilm(film);

@@ -131,7 +131,7 @@ public class UserControllerTest extends UserController {
     }
 
     @Test
-    void expectCreateUserByCreateUser(){
+    void expectCreateUserByCreateUser() {
         //Подготовка
         //Исполнение
         //Проверка
@@ -140,7 +140,7 @@ public class UserControllerTest extends UserController {
     }
 
     @Test
-    void expectCreateUserByGetUser(){
+    void expectCreateUserByGetUser() {
         //Подготовка
         //Исполнение
         createUser(user);
