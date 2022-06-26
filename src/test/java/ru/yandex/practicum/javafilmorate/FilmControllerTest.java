@@ -171,23 +171,4 @@ public class FilmControllerTest extends FilmController {
         assertEquals("Продолжительность фильма не может быть нулевой", ex.getMessage());
     }
 
-    @Test
-    void expectCreateFilmByUpdateFilm() {
-        //Подготовка
-        //Исполнение
-        //Проверка
-        assertEquals(film, createFilm(film));
-        assertEquals(1, getFilms().size());
-    }
-
-    @Test
-    void expectCreateFilmByGetFilm() {
-        //Подготовка
-        //Исполнение
-        createFilm(film);
-        final List<Film> usersList = new ArrayList<>(getFilms().values());
-        //Проверка
-        assertEquals(1, getFilms().size());
-        assertEquals(usersList, findAll());
-    }
 }
