@@ -1,5 +1,6 @@
 package ru.yandex.practicum.javafilmorate.controller;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.Map;
 @Slf4j
 @RequestMapping
 public class FilmController {
+    @Getter
     private final Map<Integer, Film> films = new HashMap<>();
     private static int setId = 1;
 
@@ -32,7 +34,7 @@ public class FilmController {
     }
 
     @PostMapping(value = "/films")
-    public Film create(@RequestBody Film film) {
+    public Film createFilm(@RequestBody Film film) {
         if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
             log.debug("Название фильма пустое {}", film.getName());
             throw new ValidationException("Название фильма не может быть пустым");
@@ -57,7 +59,7 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films")
-    public Film update(@RequestBody Film film) {
+    public Film updateFilm(@RequestBody Film film) {
         if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
             log.debug("Название фильма пустое {}", film.getName());
             throw new ValidationException("Название фильма не может быть пустым");
