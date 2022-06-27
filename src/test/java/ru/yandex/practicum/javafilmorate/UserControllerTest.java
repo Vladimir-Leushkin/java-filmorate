@@ -129,25 +129,4 @@ public class UserControllerTest extends UserController {
 
         assertEquals("Дата рождения не может быть больше " + LocalDate.now(), ex.getMessage());
     }
-
-    @Test
-    void expectCreateUserByCreateUser() {
-        //Подготовка
-        //Исполнение
-        //Проверка
-        assertEquals(user, createUser(user));
-        assertEquals(1, getUsers().size());
-    }
-
-    @Test
-    void expectCreateUserByGetUser() {
-        //Подготовка
-        //Исполнение
-        createUser(user);
-        final List<User> usersList = new ArrayList<>(getUsers().values());
-        //Проверка
-        assertEquals(1, getUsers().size());
-        assertEquals(usersList, findAll());
-    }
-
 }
