@@ -1,11 +1,8 @@
 package ru.yandex.practicum.javafilmorate.controller;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
-import ru.yandex.practicum.javafilmorate.model.Film;
 import ru.yandex.practicum.javafilmorate.model.User;
 
 import java.time.LocalDate;
@@ -35,7 +32,7 @@ public class UserController {
 
     @PostMapping(value = "/users")
     public User createUser(@RequestBody User user) {
-        if (validationFilm(user)) {
+        if (validateFilm(user)) {
             user.setId(getSetId());
             if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
                 user.setName(user.getLogin());
@@ -49,7 +46,7 @@ public class UserController {
 
     @PutMapping(value = "/users")
     public User updateUser(@RequestBody User user) {
-        if (validationFilm(user)) {
+        if (validateFilm(user)) {
             if (!users.containsKey(user.getId())) {
                 throw new ValidationException("Пользователь не найден");
             }
@@ -59,7 +56,7 @@ public class UserController {
         return user;
     }
 
-    private boolean validationFilm(User user) {
+    private boolean validateFilm(User user) {
         if (user.getEmail() == null || user.getEmail().isEmpty() || user.getEmail().isBlank() ||
                 !user.getEmail().contains("@")) {
             log.debug("Адрес электронной почты пустой {}", user.getEmail());

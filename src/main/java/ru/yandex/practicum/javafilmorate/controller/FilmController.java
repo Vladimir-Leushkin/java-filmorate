@@ -1,12 +1,9 @@
 package ru.yandex.practicum.javafilmorate.controller;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,7 +34,7 @@ public class FilmController {
 
     @PostMapping(value = "/films")
     public Film createFilm(@RequestBody Film film) {
-        if (validationFilm(film)) {
+        if (validateFilm(film)) {
             film.setId(getSetId());
             log.debug("Добавлен фильм: {}", film);
             films.put(film.getId(), film);
@@ -48,7 +45,7 @@ public class FilmController {
 
     @PutMapping(value = "/films")
     public Film updateFilm(@RequestBody Film film) {
-        if (validationFilm(film)) {
+        if (validateFilm(film)) {
             if (!films.containsKey(film.getId())) {
                 throw new ValidationException("Фильм не найден");
             }
@@ -58,7 +55,7 @@ public class FilmController {
         return film;
     }
 
-    private boolean validationFilm(Film film) {
+    private boolean validateFilm(Film film) {
         if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
             log.debug("Название фильма пустое {}", film.getName());
             throw new ValidationException("Название фильма не может быть пустым");
