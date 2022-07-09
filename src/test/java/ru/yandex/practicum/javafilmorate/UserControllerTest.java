@@ -1,20 +1,29 @@
+/*
+
 package ru.yandex.practicum.javafilmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.javafilmorate.controller.UserController;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.User;
+import ru.yandex.practicum.javafilmorate.service.UserService;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+@RestController
 public class UserControllerTest extends UserController {
 
     protected User user = new User();
+    @Autowired
+    public UserControllerTest(UserService userService) {
+        super(userService);
+    }
 
     @BeforeEach
     void beforeEach() {
@@ -125,4 +134,16 @@ public class UserControllerTest extends UserController {
 
         assertEquals("Дата рождения не может быть больше " + LocalDate.now(), ex.getMessage());
     }
+
+    @Test
+    void expectNewUserByCreateUser() {
+        //Подготовка
+        //Исполнение
+        createUser(user);
+        //Проверка
+        assertEquals(1, findAll().size());
+    }
+
 }
+
+*/
