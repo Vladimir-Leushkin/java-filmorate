@@ -15,7 +15,6 @@ import java.util.List;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
-    private static final LocalDate MAX_BIRTHDAY = LocalDate.now();
     private static int setId = 1;
 
     public UserService(UserStorage userStorage) {
@@ -139,7 +138,7 @@ public class UserService {
             log.debug("Логин пустой {}", user.getLogin());
             throw new ValidationException("Логин не может быть пустым");
         }
-        if (user.getBirthday().isAfter(MAX_BIRTHDAY)) {
+        if (user.getBirthday().isAfter(LocalDate.now())) {
             log.debug("Дата рождения превышает текущую {}", user.getBirthday());
             throw new ValidationException("Дата рождения не может быть больше " + LocalDate.now());
         }
