@@ -1,29 +1,26 @@
-/*
-
 package ru.yandex.practicum.javafilmorate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.javafilmorate.controller.UserController;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.service.UserService;
+import ru.yandex.practicum.javafilmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-@RestController
-public class UserControllerTest extends UserController {
 
+public class UserControllerTest {
+    protected UserStorage userStorage = new InMemoryUserStorage();
+    protected UserService userService = new UserService(userStorage);
+    protected UserController userController = new UserController(userService);
     protected User user = new User();
-    @Autowired
-    public UserControllerTest(UserService userService) {
-        super(userService);
-    }
+
 
     @BeforeEach
     void beforeEach() {
@@ -43,7 +40,7 @@ public class UserControllerTest extends UserController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createUser(user);
+                        userController.createUser(user);
                     }
                 });
 
@@ -60,7 +57,7 @@ public class UserControllerTest extends UserController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createUser(user);
+                        userController.createUser(user);
                     }
                 });
 
@@ -77,7 +74,7 @@ public class UserControllerTest extends UserController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createUser(user);
+                        userController.createUser(user);
                     }
                 });
 
@@ -94,7 +91,7 @@ public class UserControllerTest extends UserController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateUser(user);
+                        userController.updateUser(user);
                     }
                 });
 
@@ -111,7 +108,7 @@ public class UserControllerTest extends UserController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateUser(user);
+                        userController.updateUser(user);
                     }
                 });
 
@@ -128,22 +125,13 @@ public class UserControllerTest extends UserController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateUser(user);
+                        userController.updateUser(user);
                     }
                 });
 
         assertEquals("Дата рождения не может быть больше " + LocalDate.now(), ex.getMessage());
     }
 
-    @Test
-    void expectNewUserByCreateUser() {
-        //Подготовка
-        //Исполнение
-        createUser(user);
-        //Проверка
-        assertEquals(1, findAll().size());
-    }
-
 }
 
-*/
+
