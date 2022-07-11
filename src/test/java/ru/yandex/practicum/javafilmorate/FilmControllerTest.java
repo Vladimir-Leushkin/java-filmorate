@@ -6,14 +6,25 @@ import org.junit.jupiter.api.function.Executable;
 import ru.yandex.practicum.javafilmorate.controller.FilmController;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
+import ru.yandex.practicum.javafilmorate.service.FilmService;
+import ru.yandex.practicum.javafilmorate.service.UserService;
+import ru.yandex.practicum.javafilmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.javafilmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.javafilmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class FilmControllerTest extends FilmController {
 
+public class FilmControllerTest {
+    protected FilmStorage filmStorage = new InMemoryFilmStorage();
+    protected UserStorage userStorage = new InMemoryUserStorage();
+    protected UserService userService = new UserService(userStorage);
+    protected FilmService filmService = new FilmService(filmStorage, userService);
+    protected FilmController filmController = new FilmController(filmService);
     protected Film film = new Film();
 
     @BeforeEach
@@ -34,7 +45,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createFilm(film);
+                        filmController.createFilm(film);
                     }
                 });
 
@@ -55,7 +66,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createFilm(film);
+                        filmController.createFilm(film);
                     }
                 });
 
@@ -72,7 +83,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createFilm(film);
+                        filmController.createFilm(film);
                     }
                 });
 
@@ -89,7 +100,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        createFilm(film);
+                        filmController.createFilm(film);
                     }
                 });
 
@@ -106,7 +117,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateFilm(film);
+                        filmController.updateFilm(film);
                     }
                 });
 
@@ -127,7 +138,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateFilm(film);
+                        filmController.updateFilm(film);
                     }
                 });
 
@@ -144,7 +155,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateFilm(film);
+                        filmController.updateFilm(film);
                     }
                 });
 
@@ -161,7 +172,7 @@ public class FilmControllerTest extends FilmController {
                 new Executable() {
                     @Override
                     public void execute() {
-                        updateFilm(film);
+                        filmController.updateFilm(film);
                     }
                 });
 
@@ -169,3 +180,4 @@ public class FilmControllerTest extends FilmController {
     }
 
 }
+
