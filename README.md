@@ -11,5 +11,4 @@ Template repository for Filmorate project.
 ![schema Filmorate](E:\dev\java-filmorate\film_genres.png)
 
 Для остальных таблиц отношения реализованны похожим образом.
-
 В таблице "User_friends" поле "friends" отображает согласие на дружбу, если значение false то запрос без ответа.
