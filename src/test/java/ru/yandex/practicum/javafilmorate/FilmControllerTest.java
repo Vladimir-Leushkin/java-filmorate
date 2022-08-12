@@ -1,31 +1,33 @@
+
 package ru.yandex.practicum.javafilmorate;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.javafilmorate.controller.FilmController;
+import ru.yandex.practicum.javafilmorate.controller.UserController;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.service.FilmService;
-import ru.yandex.practicum.javafilmorate.service.UserService;
-import ru.yandex.practicum.javafilmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.javafilmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.javafilmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
+import ru.yandex.practicum.javafilmorate.model.Mpa;
+import ru.yandex.practicum.javafilmorate.model.User;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmControllerTest {
-    protected FilmStorage filmStorage = new InMemoryFilmStorage();
-    protected UserStorage userStorage = new InMemoryUserStorage();
-    protected UserService userService = new UserService(userStorage);
-    protected FilmService filmService = new FilmService(filmStorage, userService);
-    protected FilmController filmController = new FilmController(filmService);
+    private final FilmController filmController;
+    private final UserController userController;
     protected Film film = new Film();
+
 
     @BeforeEach
     void beforeEach() {
@@ -33,6 +35,7 @@ public class FilmControllerTest {
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(1995, 10, 20));
         film.setDuration(100);
+        film.setMpa(new Mpa(1, "G"));
     }
 
     @Test
@@ -179,5 +182,53 @@ public class FilmControllerTest {
         assertEquals("Продолжительность фильма не может быть нулевой", ex.getMessage());
     }
 
+    @Test
+    void expectAddFilm() {
+        //Подготовка
+        //Исполнение
+        filmController.createFilm(film);
+        //Проверка
+        assertEquals(1, filmController.findAll().get(0).getId());
+        assertEquals("Name", filmController.findFilmById(1).getName());
+    }
+
+    @Test
+    void expectAddFilmLike() {
+        //Подготовка
+        User user = new User();
+        user.setName("Name");
+        user.setEmail("Email@email");
+        user.setLogin("Login");
+        user.setBirthday(LocalDate.of(1995, 10, 20));
+        userController.createUser(user);
+        //Исполнение
+        filmController.createFilm(film);
+        filmController.addLikeFilmByUserId(1, 1);
+        //Проверка
+        assertEquals(1, filmController.findAllByLikes(10).get(0).getId());
+        assertEquals("Name", filmController.findAllByLikes(10).get(0).getName());
+
+    }
+
+    @Test
+    void expectFindAllGenres() {
+        //Подготовка
+        //Исполнение
+        //Проверка
+        assertEquals(1, filmController.findAllGenres().get(0).getId());
+        assertEquals("Комедия", filmController.findGenreById(1).getName());
+        assertEquals(6, filmController.findAllGenres().size());
+    }
+
+    @Test
+    void expectFindAllMpa() {
+        //Подготовка
+        //Исполнение
+        //Проверка
+        assertEquals(1, filmController.findAllMpa().get(0).getId());
+        assertEquals("G", filmController.findMpaById(1).getName());
+        assertEquals(5, filmController.findAllMpa().size());
+    }
 }
+
 

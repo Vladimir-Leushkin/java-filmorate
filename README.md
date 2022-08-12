@@ -1,7 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-![schema Filmorate](E:\dev\java-filmorate\Schema_Filmorate.png)
+![schema Filmorate](E:\dev\java-filmorate\img.png))
 
 Таблица "Films" имеет первичный ключ "film_id". Таблица "Genres" имеет первичный ключ "genre_id"
 Взаимодействие таблиц как отношение многие-ко-многим реализованно через таблицу "Film_genres", в которой каждому 
@@ -11,4 +11,3 @@ Template repository for Filmorate project.
 ![schema Filmorate](E:\dev\java-filmorate\film_genres.png)
 
 Для остальных таблиц отношения реализованны похожим образом.
-В таблице "User_friends" поле "friends" отображает согласие на дружбу, если значение false то запрос без ответа.
