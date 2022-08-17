@@ -44,8 +44,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select F.*, " +
                 "M.MPA_NAME " +
                 "from FILMS F " +
-                "LEFT JOIN MPA M ON F.MPA_ID = M.MPA_ID " +
-                "LEFT JOIN FILM_GENRES FG ON F.FILM_ID = FG.FILM_ID";
+                "LEFT JOIN MPA M ON F.MPA_ID = M.MPA_ID ";
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum));
         log.debug("Найдены фильмы: {} ", films);
         return films;
@@ -136,6 +135,13 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "delete from  FILM_LIKES where FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         log.debug("Фильму: {}, удален лайк от пользователя: {}", id, userId);
+    }
+
+    @Override
+    public void deleteFilm(Integer id) {
+        String sqlQuery = "delete from FILMS where FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        log.debug("Удален фильм: {}", id);
     }
 
 }

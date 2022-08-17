@@ -78,6 +78,12 @@ public class UserService {
         return null;
     }
 
+    public void deleteUserById(Integer id){
+        if (checkUserById(id)) {
+            userStorage.deleteUser(id);
+        }
+    }
+
     protected boolean checkUserById(Integer id) {
         List<User> users = userStorage.getUsersList();
         Map<Integer, User> usersMap = new HashMap<>();
