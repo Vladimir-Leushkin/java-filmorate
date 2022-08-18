@@ -52,10 +52,20 @@ public class FilmController {
         filmService.deleteLikeFilmByUserId(id, userId);
     }
 
+    @DeleteMapping("/films/{id}")
+    public void deleteFilmById(@PathVariable Integer id) {
+        filmService.deleteFilmById(id);
+    }
+
     @GetMapping("/films/popular")
     public List<Film> findAllByLikes(@RequestParam(defaultValue = "10", required = false)
                                      Integer count) {
         return filmService.findAllByLikes(count);
+    }
+
+    @GetMapping("/films/common")
+    public List<Film> findCommonByUser (@RequestParam Integer userId, Integer friendId){
+        return filmService.findCommonByUser(userId, friendId);
     }
 
     @GetMapping("/genres")

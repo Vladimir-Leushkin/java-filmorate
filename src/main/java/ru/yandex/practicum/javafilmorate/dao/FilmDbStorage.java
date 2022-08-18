@@ -44,8 +44,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select F.*, " +
                 "M.MPA_NAME " +
                 "from FILMS F " +
-                "LEFT JOIN MPA M ON F.MPA_ID = M.MPA_ID " +
-                "LEFT JOIN FILM_GENRES FG ON F.FILM_ID = FG.FILM_ID";
+                "LEFT JOIN MPA M ON F.MPA_ID = M.MPA_ID ";
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum));
         log.debug("Найдены фильмы: {} ", films);
         return films;
@@ -122,6 +121,21 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Найдены фильмы: {} ", films);
         return films;
     }
+    @Override
+    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+        String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
+                "left join FILM_LIKES FL on f.film_id = FL.film_id " +
+                "where f.film_id in (select L1.film_id " +
+                "from FILM_LIKES as L1 " +
+                "inner join FILM_LIKES as L2 on L1.film_id = L2.film_id " +
+                "where L1.user_id = ? and L2.user_id = ? " +
+                "group by L1.film_id) " +
+                "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
+                "order by c desc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), userId, friendId);
+        log.debug("Найдены общие фильмы: {} ", films);
+        return films;
+    }
 
     @Override
     public void addLike(Integer id, Integer userId) {
@@ -136,6 +150,13 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "delete from  FILM_LIKES where FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         log.debug("Фильму: {}, удален лайк от пользователя: {}", id, userId);
+    }
+
+    @Override
+    public void deleteFilm(Integer id) {
+        String sqlQuery = "delete from FILMS where FILM_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        log.debug("Удален фильм: {}", id);
     }
 
 }
