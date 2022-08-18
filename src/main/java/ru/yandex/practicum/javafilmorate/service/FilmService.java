@@ -2,6 +2,7 @@ package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
@@ -70,6 +71,11 @@ public class FilmService {
         return filmStorage.getPopularFilmsList(count);
     }
 
+    public void deleteFilmById(@PathVariable Integer id) {
+        if (checkFilmById(id)) {
+            filmStorage.deleteFilm(id);
+        }
+    }
 
 
     private boolean checkFilmById(Integer id) {

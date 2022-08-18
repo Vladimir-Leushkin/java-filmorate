@@ -153,6 +153,12 @@ public class UserDbStorage implements UserStorage {
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs, rowNum), id, otherId);
         log.debug("У пользователя: {} и пользователя: {} найдены общие друзья {}", id, otherId, users);
         return users;
+    }
 
+    @Override
+    public void deleteUser (Integer id){
+        String sqlQuery = "delete from USERS where USER_ID = ?";
+        jdbcTemplate.update(sqlQuery, id);
+        log.debug("Удален пользователь: {}", id);
     }
 }

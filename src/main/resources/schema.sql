@@ -42,8 +42,8 @@ create table if not exists FILM_GENRES
 
 create table if not exists FILM_LIKES
 (
-    film_id int,
-    user_id int,
+    film_id int REFERENCES FILMS (film_id) ON DELETE CASCADE,
+    user_id int REFERENCES USERS (user_id) ON DELETE CASCADE,
     CONSTRAINT film_likes_fk
         FOREIGN KEY (film_id)
             REFERENCES FILMS (film_id),
@@ -55,8 +55,8 @@ create table if not exists FILM_LIKES
 
 create table if not exists USER_FRIENDS
 (
-    user_id   int,
-    friend_id int,
+    user_id int REFERENCES USERS (user_id) ON DELETE CASCADE,
+    friend_id int REFERENCES USERS (user_id) ON DELETE CASCADE,
     CONSTRAINT user_friend_fk
         FOREIGN KEY (user_id)
             REFERENCES USERS (user_id),
