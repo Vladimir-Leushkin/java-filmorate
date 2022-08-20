@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.javafilmorate.model.Feed;
-import ru.yandex.practicum.javafilmorate.service.FeedService;
+import ru.yandex.practicum.javafilmorate.model.Event;
+import ru.yandex.practicum.javafilmorate.service.EventService;
 
 import java.util.Collection;
 
@@ -15,11 +15,11 @@ import java.util.Collection;
 @Slf4j
 @RequestMapping("/users")
 @RequiredArgsConstructor
-public class FeedController {
-    private final FeedService feedService;
+public class EventController {
+    private final EventService eventService;
 
     @GetMapping("/{id}/feed")
-    public Collection<Feed> getFeedForUser(@PathVariable("id") Integer id) {
-        return feedService.getFeedForUser(id);
+    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
+        return eventService.getEventForUser(id);
     }
 }

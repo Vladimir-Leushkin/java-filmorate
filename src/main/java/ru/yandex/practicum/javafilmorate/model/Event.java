@@ -1,7 +1,7 @@
 package ru.yandex.practicum.javafilmorate.model;
 
 import lombok.*;
-import ru.yandex.practicum.javafilmorate.enums.FeedType;
+import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 
 import java.time.LocalDateTime;
@@ -11,12 +11,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 @EqualsAndHashCode(of = "id")
-public class Feed {
+public class Event {
     private Integer id;
     private LocalDateTime timestamp;
     private Integer userId;
-    private FeedType feedType;
+    private EventType eventType;
     private OperationType operation;
     private Integer entityId;
 }
