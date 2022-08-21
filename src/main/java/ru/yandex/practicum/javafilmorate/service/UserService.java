@@ -3,16 +3,18 @@ package ru.yandex.practicum.javafilmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import ru.yandex.practicum.javafilmorate.enums.EventType;
+import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
+import ru.yandex.practicum.javafilmorate.model.Event;
 import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -20,6 +22,7 @@ import java.util.Map;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final EventService eventService;
 
     public List<User> findAll() {
         final List<User> usersList = new ArrayList<>(userStorage.getUsersList());
@@ -55,12 +58,14 @@ public class UserService {
     public void addFriend(Integer id, Integer friendId) {
         if (checkUserById(id) && checkUserById(friendId)) {
             userStorage.addFriend(id, friendId);
+            eventService.addEvent(id, friendId, EventType.FRIEND, OperationType.ADD);
         }
     }
 
     public void deleteFriend(Integer id, Integer friendId) {
         if (checkUserById(id) && checkUserById(friendId)) {
             userStorage.deleteFriend(id, friendId);
+            eventService.addEvent(id, friendId, EventType.FRIEND, OperationType.REMOVE);
         }
     }
 
@@ -82,6 +87,11 @@ public class UserService {
         if (checkUserById(id)) {
             userStorage.deleteUser(id);
         }
+    }
+
+    @GetMapping("/{id}/feed")
+    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
+        return eventService.getEventForUser(id);
     }
 
     protected boolean checkUserById(Integer id) {

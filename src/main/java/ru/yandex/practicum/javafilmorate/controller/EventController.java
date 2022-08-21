@@ -13,13 +13,13 @@ import java.util.Collection;
 
 @RestController
 @Slf4j
-@RequestMapping("/users")
+
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
 
-    @GetMapping("/{id}/feed")
-    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
-        return eventService.getEventForUser(id);
-    }
+//    @GetMapping("/{id}/feed")
+//    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
+//        return eventService.getEventForUser(id);
+//    }
 }
