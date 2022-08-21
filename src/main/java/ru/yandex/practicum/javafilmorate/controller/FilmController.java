@@ -87,5 +87,11 @@ public class FilmController {
     public Mpa findMpaById(@PathVariable Integer id) {
         return mpaService.findMpaById(id);
     }
+
+    @GetMapping("/films/director/{directorId}")
+    public List<Film> getFilmsListDirector(@PathVariable Integer directorId,
+                                           @RequestParam(defaultValue = "year", required = false) String sortBy) {
+        return filmService.getFilmsListDirector(directorId,sortBy);
+    }
 }
 
