@@ -22,7 +22,7 @@ public class DirectorService {
         return directorStorage.getDirectorList();
     }
 
-    public Director findDirectorById(@PathVariable Integer id) {
+    public Director findDirectorById(Integer id) {
         try {
             return directorStorage.findDirectorById(id);
         }  catch (Exception exception) {
@@ -40,7 +40,7 @@ public class DirectorService {
         return director;
     }
 
-    public void deleteDirectorById(@PathVariable Integer id){
+    public void deleteDirectorById(Integer id){
         Integer result = directorStorage.deleteDirectorById(id);
         if (result == 0) {
             throw new NotFoundException("Director not found");

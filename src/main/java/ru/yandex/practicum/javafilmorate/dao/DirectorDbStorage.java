@@ -96,7 +96,7 @@ public class DirectorDbStorage implements DirectorStorage {
     public List<Director> getDirectorList() {
         String sql = "select * from DIRECTORS";
         List<Director> allDirectors = jdbcTemplate.query(sql, (rs, rowNum) -> makeDirector(rs, rowNum));
-        log.debug("Найдены рейтинги: {} ", allDirectors);
+        log.debug("Найдены режиссеры: {} ", allDirectors);
         return allDirectors;
     }
 
