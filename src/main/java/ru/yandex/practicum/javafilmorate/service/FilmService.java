@@ -77,6 +77,12 @@ public class FilmService {
         }
     }
 
+    public List<Film> getFilmsListDirector(Integer directorId, String sortBy) {
+        List<Film> films = filmStorage.getFilmsListDirector(directorId, sortBy);
+        if (films.size() == 0) {
+            throw new NotFoundException("Directors not found");
+        } else return films;
+    }
 
     private boolean checkFilmById(Integer id) {
         List<Film> films = filmStorage.getFilmsList();
