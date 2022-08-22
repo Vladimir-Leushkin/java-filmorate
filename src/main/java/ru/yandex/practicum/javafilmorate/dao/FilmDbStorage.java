@@ -129,6 +129,21 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Найдены фильмы: {} ", films);
         return films;
     }
+    @Override
+    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+        String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
+                "left join FILM_LIKES FL on f.film_id = FL.film_id " +
+                "where f.film_id in (select L1.film_id " +
+                "from FILM_LIKES as L1 " +
+                "inner join FILM_LIKES as L2 on L1.film_id = L2.film_id " +
+                "where L1.user_id = ? and L2.user_id = ? " +
+                "group by L1.film_id) " +
+                "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
+                "order by c desc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), userId, friendId);
+        log.debug("Найдены общие фильмы: {} ", films);
+        return films;
+    }
 
     @Override
     public void addLike(Integer id, Integer userId) {

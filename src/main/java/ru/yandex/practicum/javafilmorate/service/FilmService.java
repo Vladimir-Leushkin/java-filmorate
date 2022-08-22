@@ -76,6 +76,10 @@ public class FilmService {
         return filmStorage.getPopularFilmsList(count);
     }
 
+    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+        return filmStorage.findCommonByUser(userId, friendId);
+    }
+
     public void deleteFilmById(@PathVariable Integer id) {
         if (checkFilmById(id)) {
             filmStorage.deleteFilm(id);

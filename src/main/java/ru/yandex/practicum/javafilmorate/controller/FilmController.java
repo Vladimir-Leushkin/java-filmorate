@@ -63,6 +63,11 @@ public class FilmController {
         return filmService.findAllByLikes(count);
     }
 
+    @GetMapping("/films/common")
+    public List<Film> findCommonByUser (@RequestParam Integer userId, Integer friendId){
+        return filmService.findCommonByUser(userId, friendId);
+    }
+
     @GetMapping("/genres")
     public List<Genre> findAllGenres() {
         return genreService.findAllGenres();
