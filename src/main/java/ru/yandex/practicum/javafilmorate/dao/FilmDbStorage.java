@@ -190,5 +190,37 @@ public class FilmDbStorage implements FilmStorage {
         return films;
 
     }
-
+    @Override
+    public List<Film> searchFilms (String query, String byConditions){
+        boolean byTitle = byConditions.toLowerCase().contains("title");
+        boolean byDirector = byConditions.toLowerCase().contains("director");
+        String queryExpression = "%" + query.toLowerCase() + "%";
+        Object[] queryObj = new Object[]{queryExpression};
+        if (byTitle || byDirector) {
+            String sql = "select f.film_id as film_id, f.film_name as film_name, f.description as description, " +
+                    "f.release_date as release_date, f.duration as duration, f.mpa_id as mpa_id " +
+                    "from FILMS as f " +
+                    "left join FILM_LIKES as fl on fl.FILM_ID = f.film_id " +
+                    "where ";
+            if (byTitle) {
+                sql += "lower (f.film_name) LIKE ? ";
+                if (byDirector) {
+                    sql += "or ";
+                    queryObj = new Object[]{queryExpression, queryExpression};
+                }
+            }
+            if (byDirector) {
+                sql += "f.film_id in (select f1.film_id " +
+                        "from FILMS as f1 " +
+                        "inner join FILM_DIRECTORS fd on fd.FILM_ID = f1.FILM_ID " +
+                        "inner join DIRECTORS d on d.DIRECTOR_ID = fd.DIRECTOR_ID " +
+                        "where lower(d.DIRECTOR_NAME) LIKE ?) ";
+            }
+            sql += "GROUP BY f.film_id ORDER BY COUNT(fl.FILM_ID) DESC";
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), queryObj);
+            log.debug("По запросу найдены фильмы: {} ", films);
+            return films;
+        }
+        else return null;
+    }
 }

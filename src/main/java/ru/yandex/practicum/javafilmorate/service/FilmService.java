@@ -2,7 +2,9 @@ package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
@@ -115,6 +117,12 @@ public class FilmService {
         }
 
         return true;
+    }
+
+
+    public List<Film> searchFilms (String query, String byConditions){
+        List<Film> films = filmStorage.searchFilms(query, byConditions);
+        return films;
     }
 }
 
