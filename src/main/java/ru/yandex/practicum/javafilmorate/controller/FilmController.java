@@ -52,10 +52,20 @@ public class FilmController {
         filmService.deleteLikeFilmByUserId(id, userId);
     }
 
+    @DeleteMapping("/films/{id}")
+    public void deleteFilmById(@PathVariable Integer id) {
+        filmService.deleteFilmById(id);
+    }
+
     @GetMapping("/films/popular")
     public List<Film> findAllByLikes(@RequestParam(defaultValue = "10", required = false)
                                      Integer count) {
         return filmService.findAllByLikes(count);
+    }
+
+    @GetMapping("/films/common")
+    public List<Film> findCommonByUser (@RequestParam Integer userId, Integer friendId){
+        return filmService.findCommonByUser(userId, friendId);
     }
 
     @GetMapping("/genres")
@@ -76,6 +86,12 @@ public class FilmController {
     @GetMapping("/mpa/{id}")
     public Mpa findMpaById(@PathVariable Integer id) {
         return mpaService.findMpaById(id);
+    }
+
+    @GetMapping("/films/director/{directorId}")
+    public List<Film> getFilmsListDirector(@PathVariable Integer directorId,
+                                           @RequestParam(defaultValue = "year", required = false) String sortBy) {
+        return filmService.getFilmsListDirector(directorId,sortBy);
     }
 }
 

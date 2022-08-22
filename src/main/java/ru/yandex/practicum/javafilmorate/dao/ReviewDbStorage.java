@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,12 @@ import ru.yandex.practicum.javafilmorate.model.Review;
 import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,12 +45,25 @@ public class ReviewDbStorage implements ReviewStorage {
         return jdbcTemplate.query(sql, ((rs, rowNum) -> getReview(rs, rowNum))).stream()
                 .sorted((o1, o2) -> {
                     int result = Integer.valueOf(o1.getUseful()).compareTo(Integer.valueOf(o2.getUseful()));
-                    return result * -1;})
+                    return result * -1;
+                })
                 .collect(Collectors.toList());
     }
 
-    public static Review getReview(ResultSet rs, int rowNum) throws SQLException {
-        Review review =  new Review(rs.getString("content"),
+    @Override
+    public List<Review> getAllReviewByIdFilm(Integer filmId, Integer count) {
+        String sql = "SELECT * FROM reviews WHERE film_id = ?";
+        return jdbcTemplate.query(sql, ((rs, rowNum) -> getReview(rs, rowNum)), filmId).stream()
+                .sorted((o1, o2) -> {
+                    int result = Integer.valueOf(o1.getUseful()).compareTo(Integer.valueOf(o2.getUseful()));
+                    return result * -1;
+                })
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    private static Review getReview(ResultSet rs, int rowNum) throws SQLException {
+        Review review = new Review(rs.getString("content"),
                 rs.getBoolean("is_positive"),
                 rs.getInt("user_id"),
                 rs.getInt("film_id"));
@@ -59,40 +74,26 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review addReview(Review review) {
-        if (filmDbStorage.findFilmById(review.getFilmId()) instanceof Film &&
-                userDbStorage.findUserById(review.getUserId()) instanceof User){
-            SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-            Map<String, Object> values = new HashMap<>();
+        String sqlQuery = "INSERT INTO reviews(CONTENT, IS_POSITIVE, USER_ID, FILM_ID, USEFUL) " +
+                "values (?, ?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-            values.put("CONTENT", review.getContent());
-            values.put("IS_POSITIVE", review.getIsPositive());
-            values.put("USER_ID", review.getUserId());
-            values.put("FILM_ID", review.getFilmId());
-            values.put("USEFULNESS", 0);
-
-            KeyHolder keyHolder = jdbcInsert
-                    .withTableName("REVIEWS")
-                    .usingGeneratedKeyColumns("REVIEW_ID")
-                    .executeAndReturnKeyHolder(values);
-            review.setIdReview(keyHolder.getKey().intValue());
-
-            return review;
-        } else {
-            throw new ValidationException("Некорректные данные, отзыв не добавлен");
-        }
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"ID_REVIEW"});
+            stmt.setString(1, review.getContent());
+            stmt.setBoolean(2, review.getIsPositive());
+            stmt.setInt(3, review.getUserId());
+            stmt.setInt(4, review.getFilmId());
+            stmt.setInt(5, 0);
+            return stmt;
+        }, keyHolder);
+        review.setIdReview(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        return review;
     }
 
-
-    @Override
-    public void deleteReview(Integer id) {
-        String sql = "DELETE FROM reviews WHERE id_review = ?";
-        jdbcTemplate.update(sql, id);
-    }
 
     @Override
     public Review changeReview(Review review) {
-        if (filmDbStorage.findFilmById(review.getFilmId()) instanceof Film &&
-                userDbStorage.findUserById(review.getUserId()) instanceof User){
             String sql = "UPDATE reviews SET content = ?, is_positive = ? WHERE id_review = ?";
             jdbcTemplate.update(sql,
                     review.getContent(),
@@ -100,16 +101,26 @@ public class ReviewDbStorage implements ReviewStorage {
                     review.getIdReview()
             );
             return review;
-        } else {
-            throw new ValidationException("Проверьте отзыв на корректность.");
-        }
+    }
+
+    @Override
+    public void deleteReview(Integer id) {
+        String sql = "DELETE FROM reviews WHERE id_review = ?";
+        jdbcTemplate.update(sql, id);
+    }
+
+
+    @Override
+    public void changeUseful(Integer id, Integer num) {
+        String sql = "UPDATE reviews SET useful = useful + ? WHERE id_review = ?";
+        jdbcTemplate.update(sql, num, id);
     }
 
     @Override
     public Review findReviewById(Integer id) {
         String sql = "SELECT * FROM reviews WHERE id_review = ?";
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, id);
-        if (rowSet.next()){
+        if (rowSet.next()) {
             Review review = new Review(
                     rowSet.getString("content"),
                     rowSet.getBoolean("is_positive"),

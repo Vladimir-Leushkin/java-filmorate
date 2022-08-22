@@ -1,6 +1,7 @@
 package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -11,11 +12,7 @@ import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.javafilmorate.dao.ReviewDbStorage.getReview;
-
-@Slf4j
 @Component
 public class ReviewService {
     private final ReviewStorage reviewStorage;
@@ -26,28 +23,42 @@ public class ReviewService {
 
     private final static Integer DISLIKE = -1;
 
+    @Autowired
     public ReviewService(ReviewStorage reviewStorage, JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
         this.reviewStorage = reviewStorage;
         this.jdbcTemplate = jdbcTemplate;
         this.userDbStorage = userDbStorage;
     }
 
+    public Review addReview(Review review) {
+        return reviewStorage.addReview(review);
+    }
+
+    public Review changeReview(Review review) {
+        return reviewStorage.changeReview(review);
+    }
+
+    public void deleteReview(Integer id) {
+        reviewStorage.deleteReview(id);
+    }
+
+    public Review findReviewById(Integer id) {
+        return reviewStorage.findReviewById(id);
+    }
+
+    public List<Review> getAllReview() {
+        return reviewStorage.getAllReview();
+    }
     public List<Review> getAllReviewByIdFilm(Integer filmId, Integer count){
-        String sql = "SELECT * FROM reviews WHERE film_id = ?";
-        return jdbcTemplate.query(sql, ((rs, rowNum) -> getReview(rs, rowNum)), filmId).stream()
-                .sorted((o1, o2) -> {
-                    int result = Integer.valueOf(o1.getUseful()).compareTo(Integer.valueOf(o2.getUseful()));
-                    return result * -1;})
-                .limit(count)
-                .collect(Collectors.toList());
+        return reviewStorage.getAllReviewByIdFilm(filmId, count);
     }
 
     public void changeUseful(Integer id, Integer num){
-        String sql = "UPDATE reviews SET useful = useful + ? WHERE id_review = ?";
-        jdbcTemplate.update(sql, num, id);
+        reviewStorage.changeUseful(id, num);
     }
 
-    public void addLikeReview(Integer id, Integer userId){ addLikeDislike(id, userId, LIKE);
+    public void addLikeReview(Integer id, Integer userId){
+        addLikeDislike(id, userId, LIKE);
     }
 
     public void addDislikeReview(Integer id, Integer userId){
