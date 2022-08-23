@@ -3,9 +3,7 @@ package ru.yandex.practicum.javafilmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Director;
-import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.service.DirectorService;
-import ru.yandex.practicum.javafilmorate.service.UserService;
 
 import java.util.List;
 

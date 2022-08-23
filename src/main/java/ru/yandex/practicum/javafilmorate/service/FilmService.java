@@ -2,6 +2,9 @@ package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
@@ -71,6 +74,11 @@ public class FilmService {
     }
 
     public void deleteFilmById(Integer id) {
+    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+        return filmStorage.findCommonByUser(userId, friendId);
+    }
+
+    public void deleteFilmById(@PathVariable Integer id) {
         if (checkFilmById(id)) {
             filmStorage.deleteFilm(id);
         }
@@ -93,7 +101,7 @@ public class FilmService {
     private boolean checkFilmById(Integer id) {
         List<Film> films = filmStorage.getFilmsList();
         Map<Integer, Film> filmsMap = new HashMap<>();
-        for (Film film : films) {
+        for (Film film: films){
             filmsMap.put(film.getId(), film);
         }
         if (!filmsMap.containsKey(id)) {
@@ -117,6 +125,12 @@ public class FilmService {
         }
 
         return true;
+    }
+
+
+    public List<Film> searchFilms (String query, String byConditions){
+        List<Film> films = filmStorage.searchFilms(query, byConditions);
+        return films;
     }
 }
 

@@ -63,6 +63,11 @@ public class FilmController {
         return filmService.findAllByLikes(count);
     }
 
+    @GetMapping("/films/common")
+    public List<Film> findCommonByUser (@RequestParam Integer userId, Integer friendId){
+        return filmService.findCommonByUser(userId, friendId);
+    }
+
     @GetMapping("/genres")
     public List<Genre> findAllGenres() {
         return genreService.findAllGenres();
@@ -87,6 +92,11 @@ public class FilmController {
     public List<Film> getFilmsListDirector(@PathVariable Integer directorId,
                                            @RequestParam(defaultValue = "year", required = false) String sortBy) {
         return filmService.getFilmsListDirector(directorId, sortBy);
+    }
+
+    @GetMapping("/films/search")
+    public List<Film> searchFilms (@RequestParam String query, String by){
+        return filmService.searchFilms(query, by);
     }
 }
 

@@ -130,6 +130,21 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Найдены фильмы: {} ", films);
         return films;
     }
+    @Override
+    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+        String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
+                "left join FILM_LIKES FL on f.film_id = FL.film_id " +
+                "where f.film_id in (select L1.film_id " +
+                "from FILM_LIKES as L1 " +
+                "inner join FILM_LIKES as L2 on L1.film_id = L2.film_id " +
+                "where L1.user_id = ? and L2.user_id = ? " +
+                "group by L1.film_id) " +
+                "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
+                "order by c desc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), userId, friendId);
+        log.debug("Найдены общие фильмы: {} ", films);
+        return films;
+    }
 
     @Override
     public List<Film> findCommonByUser(Integer userId, Integer friendId) {
@@ -224,5 +239,37 @@ public class FilmDbStorage implements FilmStorage {
         return films;
 
     }
-
+    @Override
+    public List<Film> searchFilms (String query, String byConditions){
+        boolean byTitle = byConditions.toLowerCase().contains("title");
+        boolean byDirector = byConditions.toLowerCase().contains("director");
+        String queryExpression = "%" + query.toLowerCase() + "%";
+        Object[] queryObj = new Object[]{queryExpression};
+        if (byTitle || byDirector) {
+            String sql = "select f.film_id as film_id, f.film_name as film_name, f.description as description, " +
+                    "f.release_date as release_date, f.duration as duration, f.mpa_id as mpa_id " +
+                    "from FILMS as f " +
+                    "left join FILM_LIKES as fl on fl.FILM_ID = f.film_id " +
+                    "where ";
+            if (byTitle) {
+                sql += "lower (f.film_name) LIKE ? ";
+                if (byDirector) {
+                    sql += "or ";
+                    queryObj = new Object[]{queryExpression, queryExpression};
+                }
+            }
+            if (byDirector) {
+                sql += "f.film_id in (select f1.film_id " +
+                        "from FILMS as f1 " +
+                        "inner join FILM_DIRECTORS fd on fd.FILM_ID = f1.FILM_ID " +
+                        "inner join DIRECTORS d on d.DIRECTOR_ID = fd.DIRECTOR_ID " +
+                        "where lower(d.DIRECTOR_NAME) LIKE ?) ";
+            }
+            sql += "GROUP BY f.film_id ORDER BY COUNT(fl.FILM_ID) DESC";
+            List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), queryObj);
+            log.debug("По запросу найдены фильмы: {} ", films);
+            return films;
+        }
+        else return null;
+    }
 }

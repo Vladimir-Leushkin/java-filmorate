@@ -29,4 +29,6 @@ public interface FilmStorage {
     void deleteFilm(Integer id);
 
     public List<Film> getFilmsListDirector(Integer directorId, String sortBy);
+
+    public List<Film> searchFilms (String quired, String byConditions);
 }
