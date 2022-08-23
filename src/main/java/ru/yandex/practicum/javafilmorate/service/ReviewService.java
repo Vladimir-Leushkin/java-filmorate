@@ -36,6 +36,10 @@ public class ReviewService {
     }
 
     public Review findReviewById(Integer id) {
+        Review review = reviewStorage.findReviewById(id);
+        if (review == null) {
+            throw new NotFoundException("Ревью не найдено");
+        }
         return reviewStorage.findReviewById(id);
     }
 
