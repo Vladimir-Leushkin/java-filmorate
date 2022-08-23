@@ -10,9 +10,7 @@ import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.model.Event;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -41,13 +39,13 @@ public class EventDBStorage implements EventStorage {
     }
 
     @Override
-    public Collection<Event> getEventForUser(int id) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE user_id=?", (rs, rowNum) -> makeEvent(rs), id);
+    public List<Event> getEventForUser(int id) {
+        return jdbcTemplate.query("SELECT * FROM event WHERE user_id=?", this::makeEvent, id);
     }
 
-    private Event makeEvent(ResultSet rs) throws SQLException {
-        return Event.builder().
-                id(rs.getInt("id"))
+    private Event makeEvent(ResultSet rs, int rowNum) throws SQLException {
+        return Event.builder()
+                .eventId(rs.getInt("id"))
                 .timestamp(rs.getTimestamp("event_time").getTime())
                 .userId(rs.getInt("user_id"))
                 .eventType(EventType.valueOf(rs.getString("event_type")))

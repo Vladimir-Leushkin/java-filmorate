@@ -4,8 +4,6 @@ import lombok.*;
 import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @EqualsAndHashCode(of = "id")
 public class Event {
-    private Integer id;
+    private Integer eventId;
     private Long timestamp;
     private Integer userId;
     private EventType eventType;

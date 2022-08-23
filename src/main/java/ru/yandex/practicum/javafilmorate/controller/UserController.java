@@ -1,6 +1,7 @@
 package ru.yandex.practicum.javafilmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Event;
 import ru.yandex.practicum.javafilmorate.model.User;
@@ -68,7 +69,8 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/feed")
-    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<Event> getEventForUser(@PathVariable("id") Integer id) {
         return eventService.getEventForUser(id);
     }
 }

@@ -9,6 +9,7 @@ import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Event;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class EventService {
@@ -19,10 +20,7 @@ public class EventService {
         this.eventStorage = eventStorage;
     }
 
-    public Collection<Event> getEventForUser(int id) {
-        if (id < 0) {
-            throw new NotFoundException("id пользователя должен быть больше нуля");
-        }
+    public List<Event> getEventForUser(int id) {
         return eventStorage.getEventForUser(id);
     }
 

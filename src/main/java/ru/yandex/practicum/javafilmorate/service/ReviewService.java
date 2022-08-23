@@ -59,9 +59,8 @@ public class ReviewService {
     }
 
     public Review changeReview(Review review) {
-        Review addReview = reviewStorage.changeReview(review);
-        eventService.addEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.UPDATE);
-        return addReview;
+        eventService.addEvent(findReviewById(review.getReviewId()).getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.UPDATE);
+        return reviewStorage.changeReview(review);
     }
 
     public void deleteReview(Integer id) {
