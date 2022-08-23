@@ -75,9 +75,8 @@ public class ReviewDbStorage implements ReviewStorage {
                     .filmId(rowSet.getInt("film_id"))
                     .useful(rowSet.getInt("useful"))
                     .build();
-        } else {
-            throw new NotFoundException("Review с id " + id + " не найден.");
         }
+        return null;
     }
 
     private static Review getReview(ResultSet rs, int rowNum) throws SQLException {

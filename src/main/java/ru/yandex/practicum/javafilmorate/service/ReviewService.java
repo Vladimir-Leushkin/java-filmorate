@@ -1,15 +1,9 @@
 package ru.yandex.practicum.javafilmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.javafilmorate.dao.UserDbStorage;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Review;
-import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
 
 import java.util.List;
@@ -26,6 +20,13 @@ public class ReviewService {
         this.reviewStorage = reviewStorage;
     }
 
+    public List<Review> voidReviews(Integer filmId, Integer count) {
+        if (filmId == -1) {
+            return getAllReview();
+        }
+        return getAllReviewByIdFilm(filmId, count);
+    }
+
     public List<Review> getAllReview() {
         return reviewStorage.getAllReview();
     }
@@ -37,7 +38,6 @@ public class ReviewService {
     public Review findReviewById(Integer id) {
         return reviewStorage.findReviewById(id);
     }
-
 
     public Review addReview(Review review) {
         if (review.getUserId() < 0 || review.getUserId() == null
