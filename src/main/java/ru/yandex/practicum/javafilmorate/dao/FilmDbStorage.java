@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -29,7 +30,7 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
 
-    private Film makeFilm(ResultSet rs, int rowNum) throws SQLException  {
+    private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return new Film(rs.getInt("FILM_ID"),
                 rs.getString("FILM_NAME"),
                 rs.getString("DESCRIPTION"),
@@ -131,6 +132,22 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> findCommonByUser(Integer userId, Integer friendId) {
+        String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
+                "left join FILM_LIKES FL on f.film_id = FL.film_id " +
+                "where f.film_id in (select L1.film_id " +
+                "from FILM_LIKES as L1 " +
+                "inner join FILM_LIKES as L2 on L1.film_id = L2.film_id " +
+                "where L1.user_id = ? and L2.user_id = ? " +
+                "group by L1.film_id) " +
+                "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
+                "order by c desc";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), userId, friendId);
+        log.debug("Найдены общие фильмы: {} ", films);
+        return films;
+    }
+
+    @Override
     public void addLike(Integer id, Integer userId) {
         String sqlQuery = "insert into FILM_LIKES(FILM_ID, USER_ID) " +
                 "values (?, ?)";
@@ -143,6 +160,38 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "delete from  FILM_LIKES where FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
         log.debug("Фильму: {}, удален лайк от пользователя: {}", id, userId);
+    }
+
+    @Override
+    public List<Integer> findFilmIdUserLikes(Integer userId) {
+        String sqlLikes = "select film_id from FILM_LIKES " +
+                " WHERE user_id = ?";
+        List<Integer> userLikes = jdbcTemplate.queryForList(sqlLikes, Integer.class, userId);
+        return userLikes;
+    }
+
+    @Override
+    public List<Film> recommendations(Integer id) {
+        List<Film> recommendations = new ArrayList<>();
+        String sqlUser = "select FL.user_id " +
+                "from FILM_LIKES FL " +
+                "where FL.film_id in (select film_id from FILM_LIKES WHERE user_id = ?) " +
+                "and user_id <> ?" +
+                "group by FL.user_id " +
+                "having count(FL.film_id) > 0 " +
+                "order by count(FL.film_id) desc " +
+                "limit 1;";
+        List<Integer> userId = jdbcTemplate.queryForList(sqlUser, Integer.class, id, id);
+        if (userId.size() == 1) {
+            String sqlFilms = "select F.* " +
+                    "from FILM_LIKES FL " +
+                    "left join FILMS F on FL.film_id = F.film_id " +
+                    "where FL.film_id not in (select film_id from FILM_LIKES  where user_id = ?) " +
+                    "and FL.user_id = ?;";
+            recommendations = jdbcTemplate.query(sqlFilms, (rs, rowNum) -> makeFilm(rs, rowNum), id, userId.get(0));
+            log.debug("Рекомендованы фильмы: {} ", recommendations);
+        }
+        return recommendations;
     }
 
     @Override
