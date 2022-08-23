@@ -25,7 +25,7 @@ ReviewController {
     }
 
     @PutMapping
-    public Review changeReview(@Valid @RequestBody Review review) {
+    public Review changeReview(@RequestBody Review review) {
         return reviewService.changeReview(review);
     }
 
@@ -66,6 +66,6 @@ ReviewController {
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void deleteDislikeReview(@PathVariable("id") int id, @PathVariable("userId") int userId) {
-        reviewService.deleteDislikeReview(id, userId);
+        reviewService.deleteLikeReview(id, userId);
     }
 }

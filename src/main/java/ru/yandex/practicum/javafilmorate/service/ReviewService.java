@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.dao.UserDbStorage;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Review;
@@ -13,24 +14,37 @@ import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
 
 import java.util.List;
 
-@Component
+@Service
 public class ReviewService {
     private final ReviewStorage reviewStorage;
-    private final UserDbStorage userDbStorage;
-    private final JdbcTemplate jdbcTemplate;
-
     private final static Integer LIKE = 1;
 
     private final static Integer DISLIKE = -1;
 
     @Autowired
-    public ReviewService(ReviewStorage reviewStorage, JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
+    public ReviewService(ReviewStorage reviewStorage) {
         this.reviewStorage = reviewStorage;
-        this.jdbcTemplate = jdbcTemplate;
-        this.userDbStorage = userDbStorage;
     }
 
+    public List<Review> getAllReview() {
+        return reviewStorage.getAllReview();
+    }
+
+    public List<Review> getAllReviewByIdFilm(Integer filmId, Integer count) {
+        return reviewStorage.getAllReviewByIdFilm(filmId, count);
+    }
+
+    public Review findReviewById(Integer id) {
+        return reviewStorage.findReviewById(id);
+    }
+
+
     public Review addReview(Review review) {
+        if (review.getUserId() < 0 || review.getUserId() == null
+                || review.getFilmId() < 0 || review.getFilmId() == null
+                || review.getContent().isEmpty() || review.getIsPositive() == null) {
+            throw new NotFoundException("test");
+        }
         return reviewStorage.addReview(review);
     }
 
@@ -42,63 +56,15 @@ public class ReviewService {
         reviewStorage.deleteReview(id);
     }
 
-    public Review findReviewById(Integer id) {
-        return reviewStorage.findReviewById(id);
+    public void addLikeReview(Integer id, Integer userId) {
+        reviewStorage.addLikeDislikeReview(id, userId, LIKE);
     }
 
-    public List<Review> getAllReview() {
-        return reviewStorage.getAllReview();
-    }
-    public List<Review> getAllReviewByIdFilm(Integer filmId, Integer count){
-        return reviewStorage.getAllReviewByIdFilm(filmId, count);
+    public void addDislikeReview(Integer id, Integer userId) {
+        reviewStorage.addLikeDislikeReview(id, userId, DISLIKE);
     }
 
-    public void changeUseful(Integer id, Integer num){
-        reviewStorage.changeUseful(id, num);
-    }
-
-    public void addLikeReview(Integer id, Integer userId){
-        addLikeDislike(id, userId, LIKE);
-    }
-
-    public void addDislikeReview(Integer id, Integer userId){
-        addLikeDislike(id, userId, DISLIKE);
-    }
-
-    public void deleteLikeReview(Integer id, Integer userId){
-        deleteLikeDislike(id, userId, DISLIKE);
-    }
-
-    public void deleteDislikeReview(Integer id, Integer userId) {
-        deleteLikeDislike(id, userId, LIKE);
-    }
-
-    public void addLikeDislike(Integer id, Integer userId, Integer value){
-        if (reviewStorage.findReviewById(id) instanceof Review &&
-                userDbStorage.findUserById(userId) instanceof User){
-            String sqlQuery = "SELECT * FROM reviews_ratings WHERE user_id = ? AND id_review = ?";
-            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, userId, id);
-            if (rowSet.next()){
-                String sqlUpdate = "UPDATE reviews_ratings SET rate = ? WHERE user_id = ? AND id_review = ?";
-                jdbcTemplate.update(sqlUpdate, value, userId, id);
-            } else {
-                String sql = "INSERT INTO reviews_ratings (id_review, user_id, rate) VALUES (?,?,?)";
-                jdbcTemplate.update(sql, id, userId, value);
-            }
-            changeUseful(id, value);
-        } else {
-            throw new NotFoundException("Отсутствует пользователь или отзыв");
-        }
-    }
-
-    public void deleteLikeDislike(Integer id, Integer userId, Integer value){
-        if (reviewStorage.findReviewById(id) instanceof Review &&
-                userDbStorage.findUserById(userId) instanceof User){
-            changeUseful(id, value);
-            String sql = "DELETE FROM reviews_ratings WHERE user_id = ? AND id_review = ?";
-            jdbcTemplate.update(sql, userId, id);
-        } else {
-            throw new NotFoundException("Отсутствует пользователь или отзыв");
-        }
+    public void deleteLikeReview(Integer id, Integer userId) {
+        reviewStorage.deleteLikeDislikeReview(id, userId);
     }
 }
