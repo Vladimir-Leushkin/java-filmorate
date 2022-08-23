@@ -120,14 +120,11 @@ public class FilmService {
         if (film.getDuration() <= MIN_DURATION) {
             throw new ValidationException("Продолжительность фильма не может быть нулевой");
         }
-
         return true;
     }
 
-
     public List<Film> searchFilms (String query, String byConditions){
-        List<Film> films = filmStorage.searchFilms(query, byConditions);
-        return films;
+        return filmStorage.searchFilms(query, byConditions);
     }
 }
 

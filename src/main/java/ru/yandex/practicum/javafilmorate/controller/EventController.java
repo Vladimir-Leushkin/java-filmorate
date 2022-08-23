@@ -16,8 +16,8 @@ import java.util.Collection;
 
 @RequiredArgsConstructor
 public class EventController {
-    private final EventService eventService;
-
+//    private final EventService eventService;
+//
 //    @GetMapping("/{id}/feed")
 //    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
 //        return eventService.getEventForUser(id);

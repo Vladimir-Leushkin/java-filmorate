@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id")
 public class Event {
     private Integer id;
-    private LocalDateTime timestamp;
+    private Long timestamp;
     private Integer userId;
     private EventType eventType;
     private OperationType operation;

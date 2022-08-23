@@ -12,19 +12,17 @@ import java.util.Collection;
 
 @Service
 public class EventService {
-    //private final UserService userService;
     private final EventStorage eventStorage;
 
     @Autowired
     public EventService(EventStorage eventStorage) {
-       // this.userService = userService;
         this.eventStorage = eventStorage;
     }
 
     public Collection<Event> getEventForUser(int id) {
-//        if (userService.findUserById(id) == null) {
-//            throw new NotFoundException("Пользователь не найден");
-//        }
+        if (id < 0) {
+            throw new NotFoundException("id пользователя должен быть больше нуля");
+        }
         return eventStorage.getEventForUser(id);
     }
 

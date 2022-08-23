@@ -2,10 +2,12 @@ package ru.yandex.practicum.javafilmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.javafilmorate.model.Event;
 import ru.yandex.practicum.javafilmorate.model.User;
 import ru.yandex.practicum.javafilmorate.service.EventService;
 import ru.yandex.practicum.javafilmorate.service.UserService;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -65,4 +67,8 @@ public class UserController {
         userService.deleteUserById(id);
     }
 
+    @GetMapping("/users/{id}/feed")
+    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
+        return eventService.getEventForUser(id);
+    }
 }

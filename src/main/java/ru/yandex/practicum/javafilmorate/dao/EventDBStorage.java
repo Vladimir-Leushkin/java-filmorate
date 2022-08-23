@@ -42,13 +42,13 @@ public class EventDBStorage implements EventStorage {
 
     @Override
     public Collection<Event> getEventForUser(int id) {
-        return jdbcTemplate.query("SELECT * FROM event WHERE id=?", (rs, rowNum) -> makeEvent(rs), id);
+        return jdbcTemplate.query("SELECT * FROM event WHERE user_id=?", (rs, rowNum) -> makeEvent(rs), id);
     }
 
     private Event makeEvent(ResultSet rs) throws SQLException {
         return Event.builder().
                 id(rs.getInt("id"))
-                .timestamp(rs.getTimestamp("event_time").toLocalDateTime())
+                .timestamp(rs.getTimestamp("event_time").getTime())
                 .userId(rs.getInt("user_id"))
                 .eventType(EventType.valueOf(rs.getString("event_type")))
                 .operation(OperationType.valueOf(rs.getString("operation")))
