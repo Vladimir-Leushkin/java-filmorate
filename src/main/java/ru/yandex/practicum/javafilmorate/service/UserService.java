@@ -89,11 +89,6 @@ public class UserService {
         }
     }
 
-    @GetMapping("/{id}/feed")
-    public Collection<Event> getEventForUser(@PathVariable("id") Integer id) {
-        return eventService.getEventForUser(id);
-    }
-
     protected boolean checkUserById(Integer id) {
         List<User> users = userStorage.getUsersList();
         Map<Integer, User> usersMap = new HashMap<>();

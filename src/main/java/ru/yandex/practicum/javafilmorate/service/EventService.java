@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.dao.EventStorage;
 import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
-import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Event;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
