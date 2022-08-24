@@ -16,15 +16,19 @@ public interface FilmStorage {
 
     List<Film> getPopularFilmsList(Integer count);
 
-   List<Film> findCommonByUser(Integer userId, Integer friendId);
+    List<Film> findCommonByUser(Integer userId, Integer friendId);
 
     void addLike(Integer id, Integer userId);
 
     void deleteLike(Integer id, Integer userId);
 
+    List<Integer> findFilmIdUserLikes(Integer userId);
+
     void deleteFilm(Integer id);
 
     public List<Film> getFilmsListDirector(Integer directorId, String sortBy);
 
-    public List<Film> searchFilms (String quired, String byConditions);
+    public List<Film> searchFilms(String quired, String byConditions);
+
+    List<Film> recommendations(Integer id);
 }

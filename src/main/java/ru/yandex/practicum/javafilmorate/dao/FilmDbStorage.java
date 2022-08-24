@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -29,7 +30,7 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
 
-    private Film makeFilm(ResultSet rs, int rowNum) throws SQLException  {
+    private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return new Film(rs.getInt("FILM_ID"),
                 rs.getString("FILM_NAME"),
                 rs.getString("DESCRIPTION"),
@@ -129,8 +130,9 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Найдены фильмы: {} ", films);
         return films;
     }
+
     @Override
-    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+    public List<Film> findCommonByUser(Integer userId, Integer friendId) {
         String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
                 "left join FILM_LIKES FL on f.film_id = FL.film_id " +
                 "where f.film_id in (select L1.film_id " +
@@ -190,8 +192,9 @@ public class FilmDbStorage implements FilmStorage {
         return films;
 
     }
+
     @Override
-    public List<Film> searchFilms (String query, String byConditions){
+    public List<Film> searchFilms(String query, String byConditions) {
         boolean byTitle = byConditions.toLowerCase().contains("title");
         boolean byDirector = byConditions.toLowerCase().contains("director");
         String queryExpression = "%" + query.toLowerCase() + "%";
@@ -220,7 +223,37 @@ public class FilmDbStorage implements FilmStorage {
             List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), queryObj);
             log.debug("По запросу найдены фильмы: {} ", films);
             return films;
+        } else return null;
+    }
+
+    public List<Integer> findFilmIdUserLikes(Integer userId) {
+        String sqlLikes = "select film_id from FILM_LIKES " +
+                " WHERE user_id = ?";
+        List<Integer> userLikes = jdbcTemplate.queryForList(sqlLikes, Integer.class, userId);
+        return userLikes;
+    }
+
+    @Override
+    public List<Film> recommendations(Integer id) {
+        List<Film> recommendations = new ArrayList<>();
+        String sqlUser = "select FL.user_id " +
+                "from FILM_LIKES FL " +
+                "where FL.film_id in (select film_id from FILM_LIKES WHERE user_id = ?) " +
+                "and user_id <> ?" +
+                "group by FL.user_id " +
+                "having count(FL.film_id) > 0 " +
+                "order by count(FL.film_id) desc " +
+                "limit 1;";
+        List<Integer> userId = jdbcTemplate.queryForList(sqlUser, Integer.class, id, id);
+        if (userId.size() == 1) {
+            String sqlFilms = "select F.* " +
+                    "from FILM_LIKES FL " +
+                    "left join FILMS F on FL.film_id = F.film_id " +
+                    "where FL.film_id not in (select film_id from FILM_LIKES  where user_id = ?) " +
+                    "and FL.user_id = ?;";
+            recommendations = jdbcTemplate.query(sqlFilms, (rs, rowNum) -> makeFilm(rs, rowNum), id, userId.get(0));
+            log.debug("Рекомендованы фильмы: {} ", recommendations);
         }
-        else return null;
+        return recommendations;
     }
 }

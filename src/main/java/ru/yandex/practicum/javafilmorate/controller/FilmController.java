@@ -64,7 +64,7 @@ public class FilmController {
     }
 
     @GetMapping("/films/common")
-    public List<Film> findCommonByUser (@RequestParam Integer userId, Integer friendId){
+    public List<Film> findCommonByUser(@RequestParam Integer userId, Integer friendId) {
         return filmService.findCommonByUser(userId, friendId);
     }
 
@@ -91,11 +91,11 @@ public class FilmController {
     @GetMapping("/films/director/{directorId}")
     public List<Film> getFilmsListDirector(@PathVariable Integer directorId,
                                            @RequestParam(defaultValue = "year", required = false) String sortBy) {
-        return filmService.getFilmsListDirector(directorId,sortBy);
+        return filmService.getFilmsListDirector(directorId, sortBy);
     }
 
     @GetMapping("/films/search")
-    public List<Film> searchFilms (@RequestParam String query, String by){
+    public List<Film> searchFilms(@RequestParam String query, String by) {
         return filmService.searchFilms(query, by);
     }
 }
