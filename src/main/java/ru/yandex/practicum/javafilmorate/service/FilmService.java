@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import ru.yandex.practicum.javafilmorate.enums.EventType;
+import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
@@ -21,6 +23,7 @@ import java.util.Map;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final EventService eventService;
     private static final LocalDate FIRST_RELEASE = LocalDate.of(1895, 12, 28);
     private static final int MAX_DESCRIPTION = 200;
     private static final int MIN_DURATION = 0;
@@ -57,6 +60,7 @@ public class FilmService {
         if (checkFilmById(id)) {
             if (userService.checkUserById(userId)) {
                 filmStorage.addLike(id, userId);
+                eventService.addEvent(userId, id, EventType.LIKE, OperationType.ADD);
             }
         }
     }
@@ -65,6 +69,7 @@ public class FilmService {
         if (checkFilmById(id)) {
             if (userService.checkUserById(userId)) {
                 filmStorage.deleteLike(id, userId);
+                eventService.addEvent(userId, id, EventType.LIKE, OperationType.REMOVE);
             }
         }
     }
@@ -123,14 +128,11 @@ public class FilmService {
         if (film.getDuration() <= MIN_DURATION) {
             throw new ValidationException("Продолжительность фильма не может быть нулевой");
         }
-
         return true;
     }
 
-
     public List<Film> searchFilms (String query, String byConditions){
-        List<Film> films = filmStorage.searchFilms(query, byConditions);
-        return films;
+        return filmStorage.searchFilms(query, byConditions);
     }
 }
 

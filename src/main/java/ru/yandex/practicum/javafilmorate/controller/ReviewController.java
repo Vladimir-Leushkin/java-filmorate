@@ -3,6 +3,7 @@ package ru.yandex.practicum.javafilmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.javafilmorate.model.Review;
+import ru.yandex.practicum.javafilmorate.service.EventService;
 import ru.yandex.practicum.javafilmorate.service.ReviewService;
 
 import javax.validation.Valid;

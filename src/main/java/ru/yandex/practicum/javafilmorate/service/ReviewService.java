@@ -2,6 +2,8 @@ package ru.yandex.practicum.javafilmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.javafilmorate.enums.EventType;
+import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Review;
 import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
@@ -11,13 +13,15 @@ import java.util.List;
 @Service
 public class ReviewService {
     private final ReviewStorage reviewStorage;
+    private final EventService eventService;
     private final static Integer LIKE = 1;
 
     private final static Integer DISLIKE = -1;
 
     @Autowired
-    public ReviewService(ReviewStorage reviewStorage) {
+    public ReviewService(ReviewStorage reviewStorage, EventService eventService) {
         this.reviewStorage = reviewStorage;
+        this.eventService = eventService;
     }
 
     public List<Review> voidReviews(Integer filmId, Integer count) {
@@ -49,14 +53,19 @@ public class ReviewService {
                 || review.getContent().isEmpty() || review.getIsPositive() == null) {
             throw new NotFoundException("test");
         }
-        return reviewStorage.addReview(review);
+        Review addReview = reviewStorage.addReview(review);
+        eventService.addEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.ADD);
+        return addReview;
     }
 
     public Review changeReview(Review review) {
+        eventService.addEvent(findReviewById(review.getReviewId()).getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.UPDATE);
         return reviewStorage.changeReview(review);
     }
 
     public void deleteReview(Integer id) {
+        Review review = findReviewById(id);
+        eventService.addEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.REMOVE);
         reviewStorage.deleteReview(id);
     }
 
