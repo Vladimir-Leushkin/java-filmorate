@@ -24,11 +24,11 @@ public interface FilmStorage {
 
     List<Integer> findFilmIdUserLikes(Integer userId);
 
-    List<Film> recommendations(Integer id);
-
     void deleteFilm(Integer id);
 
     public List<Film> getFilmsListDirector(Integer directorId, String sortBy);
 
-    public List<Film> searchFilms (String quired, String byConditions);
+    public List<Film> searchFilms(String quired, String byConditions);
+
+    List<Film> recommendations(Integer id);
 }

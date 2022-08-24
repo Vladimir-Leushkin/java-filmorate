@@ -19,11 +19,10 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final EventService eventService;
-
-    public UserController(UserService userService, EventService eventService) {
     private final FilmService filmService;
 
-    public UserController(UserService userService, FilmService filmService) {
+
+    public UserController(UserService userService, EventService eventService, FilmService filmService) {
         this.userService = userService;
         this.eventService = eventService;
         this.filmService = filmService;
@@ -79,6 +78,7 @@ public class UserController {
     public List<Event> getEventForUser(@PathVariable("id") Integer id) {
         return eventService.getEventForUser(id);
     }
+
     @GetMapping("/users/{id}/recommendations")
     public List<Film> recommendations(@PathVariable Integer id) {
         return filmService.recommendations(id);

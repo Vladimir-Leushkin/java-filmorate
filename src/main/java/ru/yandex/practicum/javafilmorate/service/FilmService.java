@@ -78,8 +78,7 @@ public class FilmService {
         return filmStorage.getPopularFilmsList(count);
     }
 
-    public void deleteFilmById(Integer id) {
-    public List<Film> findCommonByUser(Integer userId, Integer friendId){
+    public List<Film> findCommonByUser(Integer userId, Integer friendId) {
         return filmStorage.findCommonByUser(userId, friendId);
     }
 
@@ -106,7 +105,7 @@ public class FilmService {
     private boolean checkFilmById(Integer id) {
         List<Film> films = filmStorage.getFilmsList();
         Map<Integer, Film> filmsMap = new HashMap<>();
-        for (Film film: films){
+        for (Film film : films) {
             filmsMap.put(film.getId(), film);
         }
         if (!filmsMap.containsKey(id)) {
@@ -131,7 +130,7 @@ public class FilmService {
         return true;
     }
 
-    public List<Film> searchFilms (String query, String byConditions){
+    public List<Film> searchFilms(String query, String byConditions) {
         return filmStorage.searchFilms(query, byConditions);
     }
 }
