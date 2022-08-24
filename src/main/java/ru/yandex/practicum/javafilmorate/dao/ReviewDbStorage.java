@@ -1,15 +1,12 @@
 package ru.yandex.practicum.javafilmorate.dao;
 
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Review;
-import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Component
 public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;

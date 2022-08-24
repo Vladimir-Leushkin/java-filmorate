@@ -3,15 +3,12 @@ package ru.yandex.practicum.javafilmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
-import ru.yandex.practicum.javafilmorate.model.Event;
 import ru.yandex.practicum.javafilmorate.model.User;
-import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
+import ru.yandex.practicum.javafilmorate.dao.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;

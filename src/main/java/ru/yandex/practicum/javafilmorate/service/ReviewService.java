@@ -6,7 +6,7 @@ import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Review;
-import ru.yandex.practicum.javafilmorate.storage.review.ReviewStorage;
+import ru.yandex.practicum.javafilmorate.dao.ReviewStorage;
 
 import java.util.List;
 

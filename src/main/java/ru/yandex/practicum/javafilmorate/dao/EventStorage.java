@@ -4,7 +4,6 @@ import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.model.Event;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface EventStorage {

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.javafilmorate.dao;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,15 +9,16 @@ import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.model.Event;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-@Slf4j
 @Component
 public class EventDBStorage implements EventStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public EventDBStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -53,5 +54,4 @@ public class EventDBStorage implements EventStorage {
                 .entityId(rs.getInt("entity_id"))
                 .build();
     }
-
 }

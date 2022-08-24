@@ -5,31 +5,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.model.Director;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.model.Genre;
-import ru.yandex.practicum.javafilmorate.model.Mpa;
 
-import java.sql.*;
-import java.time.LocalDate;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
-@Repository
 @Slf4j
 @Component
 public class DirectorDbStorage implements DirectorStorage {
-
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
     public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
 
     private Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
         return new Director(rs.getInt("DIRECTOR_ID"),
@@ -54,7 +48,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Integer deleteDirectorById(Integer id) {
-        return jdbcTemplate.update("DELETE from DIRECTORS where DIRECTOR_ID = ?",id);
+        return jdbcTemplate.update("DELETE from DIRECTORS where DIRECTOR_ID = ?", id);
     }
 
     @Override
@@ -62,17 +56,17 @@ public class DirectorDbStorage implements DirectorStorage {
         String sqlQuery = "UPDATE DIRECTORS SET DIRECTOR_NAME=? WHERE DIRECTOR_ID=?;";
 
         return jdbcTemplate.update(connection -> {
-               PreparedStatement stmt = connection.prepareStatement(sqlQuery);
-               stmt.setString(1, director.getName());
-               stmt.setInt(2, director.getId());
-               return stmt;
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery);
+            stmt.setString(1, director.getName());
+            stmt.setInt(2, director.getId());
+            return stmt;
         });
     }
 
     @Override
     public List<Director> findDirectorsByFilmId(Integer filmId) {
         String sql = "select * from DIRECTORS D " +
-                      "join FILM_DIRECTORS FD on D.DIRECTOR_ID = FD.DIRECTOR_ID where FD.FILM_ID = ?";
+                "join FILM_DIRECTORS FD on D.DIRECTOR_ID = FD.DIRECTOR_ID where FD.FILM_ID = ?";
         List<Director> directors = jdbcTemplate.query(sql, (rs, rowNum) -> makeDirector(rs, rowNum), filmId);
         return directors;
     }
@@ -104,8 +98,6 @@ public class DirectorDbStorage implements DirectorStorage {
     public Director findDirectorById(Integer id) {
         return jdbcTemplate.queryForObject("select * from DIRECTORS " +
                         "where DIRECTOR_ID = ?",
-                (rs, rowNum) -> makeDirector(rs, rowNum),id);
+                (rs, rowNum) -> makeDirector(rs, rowNum), id);
     }
-
-
 }

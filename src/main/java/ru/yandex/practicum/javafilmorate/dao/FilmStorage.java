@@ -1,11 +1,10 @@
-package ru.yandex.practicum.javafilmorate.storage.film;
+package ru.yandex.practicum.javafilmorate.dao;
 
 import ru.yandex.practicum.javafilmorate.model.Film;
 
 import java.util.List;
 
 public interface FilmStorage {
-
     List<Film> getFilmsList();
 
     Film addFilm(Film film);
@@ -26,9 +25,9 @@ public interface FilmStorage {
 
     void deleteFilm(Integer id);
 
-    public List<Film> getFilmsListDirector(Integer directorId, String sortBy);
+    List<Film> getFilmsListDirector(Integer directorId, String sortBy);
 
-    public List<Film> searchFilms(String quired, String byConditions);
+    List<Film> searchFilms(String quired, String byConditions);
 
     List<Film> recommendations(Integer id);
 }

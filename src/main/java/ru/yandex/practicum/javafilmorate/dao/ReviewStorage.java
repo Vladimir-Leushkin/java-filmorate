@@ -1,4 +1,4 @@
-package ru.yandex.practicum.javafilmorate.storage.review;
+package ru.yandex.practicum.javafilmorate.dao;
 
 import ru.yandex.practicum.javafilmorate.model.Review;
 
@@ -22,5 +22,4 @@ public interface ReviewStorage {
     void changeLikeDislikeReview(Integer idReview, Integer userId, Integer num);
 
     void deleteLikeDislikeReview(Integer idReview, Integer userId);
-
 }

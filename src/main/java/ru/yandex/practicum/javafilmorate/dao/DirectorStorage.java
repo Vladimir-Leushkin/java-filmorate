@@ -6,7 +6,6 @@ import ru.yandex.practicum.javafilmorate.model.Film;
 import java.util.List;
 
 public interface DirectorStorage {
-
     List<Director> getDirectorList();
 
     Director findDirectorById(Integer id);
@@ -20,7 +19,6 @@ public interface DirectorStorage {
     public List<Director> findDirectorsByFilmId(Integer filmId);
 
     public void addFilmDirectors(Film film);
-
 }
 
 

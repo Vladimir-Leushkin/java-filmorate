@@ -2,24 +2,19 @@ package ru.yandex.practicum.javafilmorate.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.javafilmorate.model.User;
-import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Repository
 @Slf4j
 @Component
-@Primary
 public class UserDbStorage implements UserStorage {
 
     private JdbcTemplate jdbcTemplate;
@@ -101,7 +96,6 @@ public class UserDbStorage implements UserStorage {
         log.debug("Обновлена информация о пользователе: {}", user);
     }
 
-
     @Override
     public void addFriend(Integer id, Integer friendId) {
         String sqlQuery = "insert into USER_FRIENDS(USER_ID, FRIEND_ID) " +
@@ -156,7 +150,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUser (Integer id){
+    public void deleteUser(Integer id) {
         String sqlQuery = "delete from USERS where USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id);
         log.debug("Удален пользователь: {}", id);

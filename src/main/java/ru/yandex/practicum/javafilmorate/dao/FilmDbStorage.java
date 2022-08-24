@@ -8,9 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.storage.film.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -19,7 +17,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
 @Slf4j
 @Component
 @Primary
@@ -72,8 +69,6 @@ public class FilmDbStorage implements FilmStorage {
 
         genreStorage.setFilmGenre(film);
         directorStorage.addFilmDirectors(film);
-
-
         log.debug("Добавлен фильм с идентификатором {} ", film.getId());
         return findFilmById(film.getId());
     }
@@ -149,7 +144,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Integer id, Integer userId) {
-        String sqlQuery = "insert into FILM_LIKES(FILM_ID, USER_ID) " +
+        String sqlQuery = "MERGE into FILM_LIKES(FILM_ID, USER_ID) " +
                 "values (?, ?)";
         jdbcTemplate.update(sqlQuery, id, userId);
         log.debug("Фильму: {}, добавлен лайк от пользователя: {}", id, userId);
