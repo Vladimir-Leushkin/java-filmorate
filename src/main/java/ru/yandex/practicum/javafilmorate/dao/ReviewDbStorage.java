@@ -26,7 +26,9 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAllReview() {
-        String sql = "SELECT r.ID_REVIEW AS id_review, r.CONTENT AS content, r.is_positive AS is_positive, r.user_id AS user_id, r.film_id AS film_id, SUM(rr.RATE) AS useful\n" +
+        String sql = "SELECT r.ID_REVIEW AS id_review, r.CONTENT AS content" +
+                ", r.is_positive AS is_positive, r.user_id AS user_id, r.film_id AS film_id" +
+                ", SUM(rr.RATE) AS useful\n" +
                 "FROM REVIEWS AS r\n" +
                 "LEFT JOIN REVIEWS_RATINGS RR on r.ID_REVIEW = RR.ID_REVIEW\n" +
                 "GROUP BY r.ID_REVIEW";
@@ -40,7 +42,9 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAllReviewByIdFilm(Integer filmId, Integer count) {
-        String sql = "SELECT r.ID_REVIEW AS id_review, r.CONTENT AS content, r.is_positive AS is_positive, r.user_id AS user_id, r.film_id AS film_id, SUM(rr.RATE) AS useful\n" +
+        String sql = "SELECT r.ID_REVIEW AS id_review, r.CONTENT AS content" +
+                ", r.is_positive AS is_positive, r.user_id AS user_id, r.film_id AS film_id" +
+                ", SUM(rr.RATE) AS useful\n" +
                 "FROM REVIEWS AS r\n" +
                 "LEFT JOIN REVIEWS_RATINGS RR on r.ID_REVIEW = RR.ID_REVIEW\n" +
                 "WHERE r.FILM_ID=?\n" +
@@ -56,7 +60,9 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review findReviewById(Integer id) {
-        String sql = "SELECT r.ID_REVIEW AS id_review, r.CONTENT AS content, r.is_positive AS is_positive, r.user_id AS user_id, r.film_id AS film_id, SUM(rr.RATE) AS useful\n" +
+        String sql = "SELECT r.ID_REVIEW AS id_review, r.CONTENT AS content" +
+                ", r.is_positive AS is_positive, r.user_id AS user_id, r.film_id AS film_id" +
+                ", SUM(rr.RATE) AS useful\n" +
                 "FROM REVIEWS AS r\n" +
                 "LEFT JOIN REVIEWS_RATINGS RR on r.ID_REVIEW = RR.ID_REVIEW\n" +
                 "WHERE r.ID_REVIEW=?\n" +
