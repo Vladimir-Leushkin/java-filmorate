@@ -26,9 +26,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     private Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
-        return new Director(rs.getInt("DIRECTOR_ID"),
-                rs.getString("DIRECTOR_NAME")
-        );
+        return new Director(rs.getInt("DIRECTOR_ID"), rs.getString("DIRECTOR_NAME"));
     }
 
     @Override

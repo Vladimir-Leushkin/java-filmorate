@@ -3,15 +3,14 @@ package ru.yandex.practicum.javafilmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
+import ru.yandex.practicum.javafilmorate.dao.FilmStorage;
 import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
-import ru.yandex.practicum.javafilmorate.dao.FilmStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +26,7 @@ public class FilmService {
     private static final int MIN_DURATION = 0;
 
     public List<Film> findAll() {
-        final List<Film> filmsList = new ArrayList<>(filmStorage.getFilmsList());
-        return filmsList;
+        return filmStorage.getFilmsList();
     }
 
     public Film createFilm(Film film) {
@@ -81,9 +79,7 @@ public class FilmService {
     }
 
     public void deleteFilmById(@PathVariable Integer id) {
-        if (checkFilmById(id)) {
-            filmStorage.deleteFilm(id);
-        }
+        filmStorage.deleteFilm(id);
     }
 
     public List<Film> getFilmsListDirector(Integer directorId, String sortBy) {

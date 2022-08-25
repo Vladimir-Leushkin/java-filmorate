@@ -51,7 +51,7 @@ public class ReviewService {
         if (review.getUserId() < 0 || review.getUserId() == null
                 || review.getFilmId() < 0 || review.getFilmId() == null
                 || review.getContent().isEmpty() || review.getIsPositive() == null) {
-            throw new NotFoundException("test");
+            throw new NotFoundException("Поля в отзыве не могут быть пустыми или отрицательными");
         }
         Review addReview = reviewStorage.addReview(review);
         eventService.addEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.ADD);
