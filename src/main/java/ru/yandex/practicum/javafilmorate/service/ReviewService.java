@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
+import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Review;
 import ru.yandex.practicum.javafilmorate.dao.ReviewStorage;
 
@@ -51,7 +52,7 @@ public class ReviewService {
         if (review.getUserId() < 0 || review.getUserId() == null
                 || review.getFilmId() < 0 || review.getFilmId() == null
                 || review.getContent().isEmpty() || review.getIsPositive() == null) {
-            throw new NotFoundException("Поля в отзыве не могут быть пустыми или отрицательными");
+            throw new ValidationException("Поля в отзыве не могут быть пустыми или отрицательными");
         }
         Review addReview = reviewStorage.addReview(review);
         eventService.addEvent(review.getUserId(), review.getReviewId(), EventType.REVIEW, OperationType.ADD);

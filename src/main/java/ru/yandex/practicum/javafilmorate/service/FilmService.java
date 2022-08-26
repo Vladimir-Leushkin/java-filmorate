@@ -30,44 +30,35 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        if (validateFilm(film)) {
-            filmStorage.addFilm(film);
-        }
+        validateFilm(film);
+        filmStorage.addFilm(film);
         return film;
     }
 
     public Film updateFilm(Film film) {
-        if (validateFilm(film)) {
-            if (checkFilmById(film.getId())) {
-                filmStorage.update(film);
-            }
-        }
+        validateFilm(film);
+        checkFilmById(film.getId());
+        filmStorage.update(film);
         return findFilmById(film.getId());
     }
 
     public Film findFilmById(Integer id) {
-        if (checkFilmById(id)) {
-            return filmStorage.findFilmById(id);
-        }
-        return null;
+        checkFilmById(id);
+        return filmStorage.findFilmById(id);
     }
 
     public void addLikeFilmByUserId(Integer id, Integer userId) {
-        if (checkFilmById(id)) {
-            if (userService.checkUserById(userId)) {
-                filmStorage.addLike(id, userId);
-                eventService.addEvent(userId, id, EventType.LIKE, OperationType.ADD);
-            }
-        }
+        checkFilmById(id);
+        userService.checkUserById(userId);
+        filmStorage.addLike(id, userId);
+        eventService.addEvent(userId, id, EventType.LIKE, OperationType.ADD);
     }
 
     public void deleteLikeFilmByUserId(Integer id, Integer userId) {
-        if (checkFilmById(id)) {
-            if (userService.checkUserById(userId)) {
-                filmStorage.deleteLike(id, userId);
-                eventService.addEvent(userId, id, EventType.LIKE, OperationType.REMOVE);
-            }
-        }
+        checkFilmById(id);
+        userService.checkUserById(userId);
+        filmStorage.deleteLike(id, userId);
+        eventService.addEvent(userId, id, EventType.LIKE, OperationType.REMOVE);
     }
 
     public List<Film> findAllByLikes(Integer count) {
@@ -90,13 +81,11 @@ public class FilmService {
     }
 
     public List<Film> recommendations(Integer id) {
-        if (userService.checkUserById(id)) {
-            return filmStorage.recommendations(id);
-        }
-        return null;
+        userService.checkUserById(id);
+        return filmStorage.recommendations(id);
     }
 
-    private boolean checkFilmById(Integer id) {
+    private void checkFilmById(Integer id) {
         List<Film> films = filmStorage.getFilmsList();
         Map<Integer, Film> filmsMap = new HashMap<>();
         for (Film film : films) {
@@ -105,10 +94,9 @@ public class FilmService {
         if (!filmsMap.containsKey(id)) {
             throw new NotFoundException("Фильм не найден");
         }
-        return true;
     }
 
-    private boolean validateFilm(Film film) {
+    private void validateFilm(Film film) {
         if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
             throw new ValidationException("Название фильма не может быть пустым");
         }
@@ -121,7 +109,6 @@ public class FilmService {
         if (film.getDuration() <= MIN_DURATION) {
             throw new ValidationException("Продолжительность фильма не может быть нулевой");
         }
-        return true;
     }
 
     public List<Film> searchFilms(String query, String byConditions) {
