@@ -3,16 +3,15 @@ package ru.yandex.practicum.javafilmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.javafilmorate.enums.EventType;
+import ru.yandex.practicum.javafilmorate.enums.OperationType;
 import ru.yandex.practicum.javafilmorate.exeption.NotFoundException;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.User;
-import ru.yandex.practicum.javafilmorate.storage.user.UserStorage;
+import ru.yandex.practicum.javafilmorate.dao.UserStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -20,6 +19,7 @@ import java.util.Map;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final EventService eventService;
 
     public List<User> findAll() {
         final List<User> usersList = new ArrayList<>(userStorage.getUsersList());
@@ -27,58 +27,57 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (validateUser(user)) {
-            if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            userStorage.addUser(user);
+        validateUser(user);
+        if (user.getName() == null || user.getName().isEmpty() || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
+        userStorage.addUser(user);
         return user;
     }
 
     public User findUserById(Integer id) {
-        if (checkUserById(id)) {
-            return userStorage.findUserById(id);
-        }
-        return null;
+        checkUserById(id);
+        return userStorage.findUserById(id);
     }
 
     public User updateUser(User user) {
-        if (validateUser(user)) {
-            if (checkUserById(user.getId())) {
-                userStorage.update(user);
-            }
-        }
+        validateUser(user);
+        checkUserById(user.getId());
+        userStorage.update(user);
         return user;
     }
 
     public void addFriend(Integer id, Integer friendId) {
-        if (checkUserById(id) && checkUserById(friendId)) {
-            userStorage.addFriend(id, friendId);
-        }
+        checkUserById(id);
+        checkUserById(friendId);
+        userStorage.addFriend(id, friendId);
+        eventService.addEvent(id, friendId, EventType.FRIEND, OperationType.ADD);
     }
 
     public void deleteFriend(Integer id, Integer friendId) {
-        if (checkUserById(id) && checkUserById(friendId)) {
-            userStorage.deleteFriend(id, friendId);
-        }
+        checkUserById(id);
+        checkUserById(friendId);
+        userStorage.deleteFriend(id, friendId);
+        eventService.addEvent(id, friendId, EventType.FRIEND, OperationType.REMOVE);
     }
 
     public List<User> findAllFriends(Integer id) {
-        if (checkUserById(id)) {
-            return userStorage.findAllFriends(id);
-        }
-        return null;
+        checkUserById(id);
+        return userStorage.findAllFriends(id);
     }
 
     public List<User> findCommonFriends(Integer id, Integer otherId) {
-        if (checkUserById(id) && checkUserById(otherId)) {
-            return userStorage.findCommonFriends(id, otherId);
-        }
-        return null;
+        checkUserById(id);
+        checkUserById(otherId);
+        return userStorage.findCommonFriends(id, otherId);
     }
 
-    protected boolean checkUserById(Integer id) {
+    public void deleteUserById(Integer id) {
+        checkUserById(id);
+        userStorage.deleteUser(id);
+    }
+
+    protected void checkUserById(Integer id) {
         List<User> users = userStorage.getUsersList();
         Map<Integer, User> usersMap = new HashMap<>();
         for (User user : users) {
@@ -87,7 +86,6 @@ public class UserService {
         if (!usersMap.containsKey(id)) {
             throw new NotFoundException("Пользователь не найден");
         }
-        return true;
     }
 
     private boolean validateUser(User user) {
