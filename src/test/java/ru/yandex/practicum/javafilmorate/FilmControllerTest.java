@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.javafilmorate.controller.FilmController;
+import ru.yandex.practicum.javafilmorate.controller.GenreController;
+import ru.yandex.practicum.javafilmorate.controller.MpaController;
 import ru.yandex.practicum.javafilmorate.controller.UserController;
 import ru.yandex.practicum.javafilmorate.exeption.ValidationException;
 import ru.yandex.practicum.javafilmorate.model.Film;
@@ -25,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmControllerTest {
     private final FilmController filmController;
+    private final GenreController genreController;
     private final UserController userController;
+    private final MpaController mpaController;
     protected Film film = new Film();
 
 
@@ -215,9 +219,9 @@ public class FilmControllerTest {
         //Подготовка
         //Исполнение
         //Проверка
-        assertEquals(1, filmController.findAllGenres().get(0).getId());
-        assertEquals("Комедия", filmController.findGenreById(1).getName());
-        assertEquals(6, filmController.findAllGenres().size());
+        assertEquals(1, genreController.findAllGenres().get(0).getId());
+        assertEquals("Комедия", genreController.findGenreById(1).getName());
+        assertEquals(6, genreController.findAllGenres().size());
     }
 
     @Test
@@ -225,9 +229,9 @@ public class FilmControllerTest {
         //Подготовка
         //Исполнение
         //Проверка
-        assertEquals(1, filmController.findAllMpa().get(0).getId());
-        assertEquals("G", filmController.findMpaById(1).getName());
-        assertEquals(5, filmController.findAllMpa().size());
+        assertEquals(1, mpaController.findAllMpa().get(0).getId());
+        assertEquals("G", mpaController.findMpaById(1).getName());
+        assertEquals(5, mpaController.findAllMpa().size());
     }
 }
 
