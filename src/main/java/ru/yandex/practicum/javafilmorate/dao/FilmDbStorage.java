@@ -26,6 +26,7 @@ public class FilmDbStorage implements FilmStorage {
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
     private final DirectorStorage directorStorage;
+    private final MarkStorage markStorage;
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return new Film(rs.getInt("FILM_ID"),
@@ -35,7 +36,8 @@ public class FilmDbStorage implements FilmStorage {
                 rs.getInt("DURATION"),
                 mpaStorage.findMpaById(rs.getInt("MPA_ID")),
                 genreStorage.loadFilmGenre(rs.getInt("FILM_ID")),
-                directorStorage.findDirectorsByFilmId(rs.getInt("FILM_ID"))
+                directorStorage.findDirectorsByFilmId(rs.getInt("FILM_ID")),
+                markStorage.loadFilmMark(rs.getInt("FILM_ID"))
         );
     }
 
@@ -88,7 +90,8 @@ public class FilmDbStorage implements FilmStorage {
                     filmRows.getInt("DURATION"),
                     mpaStorage.findMpaById(filmRows.getInt("MPA_ID")),
                     genreStorage.loadFilmGenre(filmRows.getInt("FILM_ID")),
-                    directorStorage.findDirectorsByFilmId(filmRows.getInt("FILM_ID"))
+                    directorStorage.findDirectorsByFilmId(filmRows.getInt("FILM_ID")),
+                    markStorage.loadFilmMark(filmRows.getInt("FILM_ID"))
             );
             log.debug("Найден фильм: {} {}", film.getId(), film.getName());
             return film;
@@ -111,12 +114,13 @@ public class FilmDbStorage implements FilmStorage {
                 , film.getId());
         genreStorage.setFilmGenre(film);
         directorStorage.addFilmDirectors(film);
+        markStorage.setFilmMarks(film);
         log.debug("Обновлена информация о фильме: {}", film);
     }
 
     @Override
     public List<Film> getPopularFilmsList(Integer count) {
-        String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
+        String sql = "select f.*, avg(fl.mark) as c from FILMS f " +
                 "left join FILM_LIKES FL on f.film_id = FL.film_id " +
                 "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
                 "order by c desc " +
@@ -128,12 +132,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findCommonByUser(Integer userId, Integer friendId) {
-        String sql = "select f.*, COUNT(fl.FILM_ID) as c from FILMS f " +
+        String sql = "select f.*, avg(fl.mark) as c from FILMS f " +
                 "left join FILM_LIKES FL on f.film_id = FL.film_id " +
                 "where f.film_id in (select L1.film_id " +
                 "from FILM_LIKES as L1 " +
                 "inner join FILM_LIKES as L2 on L1.film_id = L2.film_id " +
                 "where L1.user_id = ? and L2.user_id = ? " +
+                "and L1.mark > 5 and L2.mark > 5 " +
                 "group by L1.film_id) " +
                 "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
                 "order by c desc";
@@ -143,18 +148,18 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(Integer id, Integer userId) {
-        String sqlQuery = "MERGE into FILM_LIKES(FILM_ID, USER_ID) " +
-                "values (?, ?)";
-        jdbcTemplate.update(sqlQuery, id, userId);
-        log.debug("Фильму: {}, добавлен лайк от пользователя: {}", id, userId);
+    public void addLike(Integer id, Integer userId, Integer mark) {
+        String sqlQuery = "MERGE into FILM_LIKES(FILM_ID, USER_ID, MARK) " +
+                "values (?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, id, userId, mark);
+        log.debug("Фильму: {}, добавлена оценка {} от пользователя: {}", id, mark, userId);
     }
 
     @Override
     public void deleteLike(Integer id, Integer userId) {
         String sqlQuery = "delete from  FILM_LIKES where FILM_ID = ? AND USER_ID = ?";
         jdbcTemplate.update(sqlQuery, id, userId);
-        log.debug("Фильму: {}, удален лайк от пользователя: {}", id, userId);
+        log.debug("Фильму: {}, удалена оценка от пользователя: {}", id, userId);
     }
 
     @Override
@@ -167,21 +172,22 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getFilmsListDirector(Integer directorId, String sortBy) {
         String sql = "";
         if (sortBy.equals("year")) {
-            sql = "select f.*, COUNT(fl.FILM_ID) as likes from FILMS f " +
+            sql = "select f.*, avg(fl.mark) as likes from FILMS f " +
                     "left join FILM_LIKES FL on f.film_id = FL.film_id " +
                     "LEFT JOIN FILM_DIRECTORS FD on F.FILM_ID = FD.FILM_ID " +
                     "WHERE FD.DIRECTOR_ID = ? " +
+                    "and FL.MARK > 5 " +
                     "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
                     "order by F.RELEASE_DATE ASC ";
         } else if (sortBy.equals("likes")) {
-            sql = "select f.*, COUNT(fl.FILM_ID) as likes from FILMS f " +
+            sql = "select f.*, avg(fl.mark) as likes from FILMS f " +
                     "left join FILM_LIKES FL on f.film_id = FL.film_id " +
                     "LEFT JOIN FILM_DIRECTORS FD on F.FILM_ID = FD.FILM_ID " +
                     "WHERE FD.DIRECTOR_ID = ? " +
+                    "and FL.MARK > 5 " +
                     "group by f.film_id, film_name, description, release_date, duration, mpa_id " +
                     "order by likes desc ";
         }
-
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, rowNum), directorId);
         log.debug("Найдены фильмы: {} ", films);
         return films;
@@ -199,7 +205,7 @@ public class FilmDbStorage implements FilmStorage {
                     "f.release_date as release_date, f.duration as duration, f.mpa_id as mpa_id " +
                     "from FILMS as f " +
                     "left join FILM_LIKES as fl on fl.FILM_ID = f.film_id " +
-                    "where ";
+                    "where and fl.mark > 5 and ";
             if (byTitle) {
                 sql += "lower (f.film_name) LIKE ? ";
                 if (byDirector) {
@@ -223,7 +229,7 @@ public class FilmDbStorage implements FilmStorage {
 
     public List<Integer> findFilmIdUserLikes(Integer userId) {
         String sqlLikes = "select film_id from FILM_LIKES " +
-                " WHERE user_id = ?";
+                " WHERE user_id = ? and mark > 5 ";
         List<Integer> userLikes = jdbcTemplate.queryForList(sqlLikes, Integer.class, userId);
         return userLikes;
     }
@@ -233,11 +239,12 @@ public class FilmDbStorage implements FilmStorage {
         List<Film> recommendations = new ArrayList<>();
         String sqlUser = "select FL.user_id " +
                 "from FILM_LIKES FL " +
-                "where FL.film_id in (select film_id from FILM_LIKES WHERE user_id = ?) " +
-                "and user_id <> ?" +
+                "where FL.film_id in (select film_id from FILM_LIKES WHERE user_id = ? and mark > 5 ) " +
+                "and user_id <> ? " +
+                "and mark > 5 " +
                 "group by FL.user_id " +
                 "having count(FL.film_id) > 0 " +
-                "order by count(FL.film_id) desc " +
+                "order by avg(fl.mark) desc " +
                 "limit 1;";
         List<Integer> userId = jdbcTemplate.queryForList(sqlUser, Integer.class, id, id);
         if (userId.size() == 1) {

@@ -17,7 +17,7 @@ public interface FilmStorage {
 
     List<Film> findCommonByUser(Integer userId, Integer friendId);
 
-    void addLike(Integer id, Integer userId);
+    void addLike(Integer id, Integer userId, Integer mark);
 
     void deleteLike(Integer id, Integer userId);
 

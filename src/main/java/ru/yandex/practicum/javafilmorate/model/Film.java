@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,4 +22,5 @@ public class Film {
     private Mpa mpa;
     private List<Genre> genres = new ArrayList<>();
     private List<Director> directors = new ArrayList<>();
+    private List<Mark> marks = new ArrayList<>();
 }

@@ -2,7 +2,6 @@ package ru.yandex.practicum.javafilmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.javafilmorate.dao.FilmStorage;
 import ru.yandex.practicum.javafilmorate.enums.EventType;
 import ru.yandex.practicum.javafilmorate.enums.OperationType;
@@ -47,10 +46,10 @@ public class FilmService {
         return filmStorage.findFilmById(id);
     }
 
-    public void addLikeFilmByUserId(Integer id, Integer userId) {
+    public void addLikeFilmByUserId(Integer id, Integer userId, Integer mark) {
         checkFilmById(id);
         userService.checkUserById(userId);
-        filmStorage.addLike(id, userId);
+        filmStorage.addLike(id, userId, mark);
         eventService.addEvent(userId, id, EventType.LIKE, OperationType.ADD);
     }
 
@@ -69,7 +68,7 @@ public class FilmService {
         return filmStorage.findCommonByUser(userId, friendId);
     }
 
-    public void deleteFilmById(@PathVariable Integer id) {
+    public void deleteFilmById(Integer id) {
         filmStorage.deleteFilm(id);
     }
 

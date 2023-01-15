@@ -36,20 +36,21 @@ CREATE TABLE IF NOT EXISTS film_genres
 (
     film_id  INTEGER REFERENCES films (film_id) ON DELETE CASCADE,
     genre_id INTEGER REFERENCES genres (genre_id) ON DELETE CASCADE,
-        PRIMARY KEY (film_id, genre_id)
+    PRIMARY KEY (film_id, genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS film_likes
 (
     film_id INTEGER REFERENCES films (film_id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users (user_id) ON DELETE CASCADE,
+    mark    INTEGER,
     CONSTRAINT film_likes_fk
         FOREIGN KEY (film_id)
             REFERENCES films (film_id),
     CONSTRAINT user_likes_fk
         FOREIGN KEY (user_id)
             REFERENCES users (user_id),
-            PRIMARY KEY (film_id, user_id)
+    PRIMARY KEY (film_id, user_id)
 );
 
 CREATE TABLE IF NOT EXISTS user_friends
@@ -59,7 +60,7 @@ CREATE TABLE IF NOT EXISTS user_friends
     CONSTRAINT user_friend_fk
         FOREIGN KEY (user_id)
             REFERENCES users (user_id),
-            PRIMARY KEY (user_id, friend_id)
+    PRIMARY KEY (user_id, friend_id)
 );
 
 CREATE TABLE IF NOT EXISTS directors
@@ -72,7 +73,7 @@ CREATE TABLE IF NOT EXISTS film_directors
 (
     film_id     INTEGER REFERENCES films (film_id) ON DELETE CASCADE,
     director_id INTEGER REFERENCES directors (director_id) ON DELETE CASCADE,
-        PRIMARY KEY (film_id, director_id)
+    PRIMARY KEY (film_id, director_id)
 
 );
 
@@ -97,7 +98,7 @@ CREATE TABLE IF NOT EXISTS reviews_ratings
     id_review INTEGER REFERENCES reviews (id_review) ON DELETE CASCADE,
     user_id   INTEGER REFERENCES users (user_id) ON DELETE CASCADE,
     rate      INTEGER NOT NULL,
-        UNIQUE (id_review, user_id)
+    UNIQUE (id_review, user_id)
 );
 
 CREATE TYPE IF NOT EXISTS event_type AS ENUM ('LIKE', 'FRIEND', 'REVIEW');

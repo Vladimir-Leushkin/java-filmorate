@@ -207,7 +207,7 @@ public class FilmControllerTest {
         userController.createUser(user);
         //Исполнение
         filmController.createFilm(film);
-        filmController.addLikeFilmByUserId(1, 1);
+        filmController.addLikeFilmByUserId(1, 1, 6);
         //Проверка
         assertEquals(1, filmController.findAllByLikes(10).get(0).getId());
         assertEquals("Name", filmController.findAllByLikes(10).get(0).getName());
